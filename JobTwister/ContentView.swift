@@ -11,10 +11,12 @@ struct ContentView: View {
     
     @Environment(\.modelContext) private var modelContext
     @State private var sortOption: SortOption = .dateAdded
+    @State private var isSidebarVisible = true
     @Query private var jobs: [Job]
     @State private var selectedJob: Job?
     @State private var showingAddJob = false
     @State private var searchText = ""
+    @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
     
     private var sortedJobs: [Job] {
         switch sortOption {
@@ -45,12 +47,16 @@ struct ContentView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             JobListView(
                 jobs: filteredJobs,
                 selectedJob: $selectedJob,
                 searchText: $searchText,
                 showingAddJob: $showingAddJob,
+                isSidebarVisible: Binding(
+                    get: { columnVisibility == .doubleColumn },
+                    set: { columnVisibility = $0 ? .doubleColumn : .detailOnly }
+                ),
                 onSort: { option in
                     sortOption = option
                 },
