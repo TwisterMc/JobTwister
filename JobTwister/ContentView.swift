@@ -56,6 +56,7 @@ struct ContentView: View {
                 },
                 currentSortOption: sortOption
             )
+            .navigationSplitViewColumnWidth(min: 300, ideal: 300)
         } detail: {
             ScrollView {
                 if selectedJob == nil {
