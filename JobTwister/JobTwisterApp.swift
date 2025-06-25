@@ -15,5 +15,14 @@ struct JobTwisterApp: App {
             ContentView()
         }
         .modelContainer(for: Job.self)
+        .commands {
+            CommandGroup(replacing: .help) {
+                Button("JobTwister Help") {
+                    if let url = URL(string: "https://github.com/TwisterMc/JobTwister") {
+                        NSWorkspace.shared.open(url)
+                    }
+                }
+            }
+        }
     }
 }
