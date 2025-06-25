@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  JobTwister
-//
-//  Created by Thomas McMahon on 6/25/25.
-//
-
 import SwiftUI
 import SwiftData
 import Charts
@@ -35,65 +28,79 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView {
-            List(filteredJobs, id: \.id, selection: $selectedJob) { job in
-                Button(action: {
-                    selectedJob = job
-                }) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(job.companyName)
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            Text(job.jobTitle)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            
-                            HStack(spacing: 8) {
-                                Text(job.dateApplied, format: .dateTime.month().day().year())
-                                    .font(.caption)
+            List {
+                ForEach(filteredJobs) { job in
+                    Button(action: {
+                        selectedJob = job
+                    }) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(job.companyName)
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                
+                                Text(job.jobTitle)
+                                    .font(.subheadline)
                                     .foregroundColor(.secondary)
                                 
-                                if job.hasInterview {
-                                    Label("Interview", systemImage: "calendar.badge.clock")
+                                HStack(spacing: 8) {
+                                    Text(job.dateApplied, format: .dateTime.month().day().year())
                                         .font(.caption)
-                                        .foregroundColor(.green)
-                                }
-                                
-                                if job.isDenied {
-                                    Label("Denied", systemImage: "xmark.circle")
+                                        .foregroundColor(.secondary)
+                                    
+                                    if job.hasInterview {
+                                        Label("Interview", systemImage: "calendar.badge.clock")
+                                            .font(.caption)
+                                            .foregroundColor(.green)
+                                    }
+                                    
+                                    if job.isDenied {
+                                        Label("Denied", systemImage: "xmark.circle")
+                                            .font(.caption)
+                                            .foregroundColor(.red)
+                                    }
+                                    
+                                    Text(job.workplaceType.rawValue)
                                         .font(.caption)
-                                        .foregroundColor(.red)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .fill(workplaceTypeColor(job.workplaceType).opacity(0.2))
+                                        )
+                                        .foregroundColor(workplaceTypeColor(job.workplaceType))
                                 }
-                                
-                                Text(job.workplaceType.rawValue)
-                                    .font(.caption)
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .fill(workplaceTypeColor(job.workplaceType).opacity(0.2))
-                                    )
-                                    .foregroundColor(workplaceTypeColor(job.workplaceType))
                             }
+                            Spacer()
                         }
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 10)
+                        .frame(maxWidth: .infinity)
+                        .background(selectedJob?.id == job.id ? Color.accentColor.opacity(0.1) : Color.clear)
+                        .cornerRadius(8)
                     }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-                .padding(.vertical, 4)
-                .background(selectedJob?.id == job.id ? Color.accentColor.opacity(0.1) : Color.clear)
-                .cornerRadius(8)
             }
             .listStyle(.plain)
             .searchable(text: $searchText, prompt: "Search jobs...")
             .navigationTitle("Job Applications")
             .toolbar {
-                ToolbarItem {
-                    Button(action: {
-                        selectedJob = nil
+                // Place each button in its own ToolbarItem for better visibility on macOS
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        selectedJob = nil // Show dashboard when chart button is tapped
+                    } label: {
+                        Image(systemName: "chart.bar.fill")
+                    }
+                }
+                
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        selectedJob = nil // Ensure no job is selected when adding a new one
                         showingAddJob.toggle()
-                    }) {
-                        Label("Add Job", systemImage: "plus")
+                    } label: {
+                        Image(systemName: "plus")
                     }
                 }
             }
@@ -178,12 +185,13 @@ struct ContentView: View {
                             
                             Spacer()
                             
-                            Menu {
+                            HStack(spacing: 12) {
                                 Button(action: {
                                     showingAddJob = true
                                 }) {
                                     Label("Edit", systemImage: "pencil")
                                 }
+                                .buttonStyle(.link)
                                 
                                 Button(role: .destructive, action: {
                                     if let selectedJob = selectedJob {
@@ -194,10 +202,8 @@ struct ContentView: View {
                                 }) {
                                     Label("Delete", systemImage: "trash")
                                 }
-                            } label: {
-                                Image(systemName: "ellipsis.circle")
-                                    .font(.title2)
-                                    .foregroundColor(.accentColor)
+                                .buttonStyle(.borderless)
+                                .tint(.red)
                             }
                         }
                         .padding()
