@@ -1,0 +1,577 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		4A729DF32E0C4DE9004E1E9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4A729DD92E0C4DE8004E1E9C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4A729DE02E0C4DE8004E1E9C;
+			remoteInfo = JobTwister;
+		};
+		4A729DFD2E0C4DE9004E1E9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4A729DD92E0C4DE8004E1E9C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4A729DE02E0C4DE8004E1E9C;
+			remoteInfo = JobTwister;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		4A729DE12E0C4DE8004E1E9C /* JobTwister.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JobTwister.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A729DF22E0C4DE9004E1E9C /* JobTwisterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JobTwisterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A729DFC2E0C4DE9004E1E9C /* JobTwisterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JobTwisterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4A729E042E0C4DE9004E1E9C /* Exceptions for "JobTwister" folder in "JobTwister" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4A729DE02E0C4DE8004E1E9C /* JobTwister */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		4A729DE32E0C4DE8004E1E9C /* JobTwister */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4A729E042E0C4DE9004E1E9C /* Exceptions for "JobTwister" folder in "JobTwister" target */,
+			);
+			path = JobTwister;
+			sourceTree = "<group>";
+		};
+		4A729DF52E0C4DE9004E1E9C /* JobTwisterTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JobTwisterTests;
+			sourceTree = "<group>";
+		};
+		4A729DFF2E0C4DE9004E1E9C /* JobTwisterUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JobTwisterUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4A729DDE2E0C4DE8004E1E9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4A729DEF2E0C4DE9004E1E9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4A729DF92E0C4DE9004E1E9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4A729DD82E0C4DE8004E1E9C = {
+			isa = PBXGroup;
+			children = (
+				4A729DE32E0C4DE8004E1E9C /* JobTwister */,
+				4A729DF52E0C4DE9004E1E9C /* JobTwisterTests */,
+				4A729DFF2E0C4DE9004E1E9C /* JobTwisterUITests */,
+				4A729DE22E0C4DE8004E1E9C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4A729DE22E0C4DE8004E1E9C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4A729DE12E0C4DE8004E1E9C /* JobTwister.app */,
+				4A729DF22E0C4DE9004E1E9C /* JobTwisterTests.xctest */,
+				4A729DFC2E0C4DE9004E1E9C /* JobTwisterUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4A729DE02E0C4DE8004E1E9C /* JobTwister */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4A729E052E0C4DE9004E1E9C /* Build configuration list for PBXNativeTarget "JobTwister" */;
+			buildPhases = (
+				4A729DDD2E0C4DE8004E1E9C /* Sources */,
+				4A729DDE2E0C4DE8004E1E9C /* Frameworks */,
+				4A729DDF2E0C4DE8004E1E9C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4A729DE32E0C4DE8004E1E9C /* JobTwister */,
+			);
+			name = JobTwister;
+			packageProductDependencies = (
+			);
+			productName = JobTwister;
+			productReference = 4A729DE12E0C4DE8004E1E9C /* JobTwister.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4A729DF12E0C4DE9004E1E9C /* JobTwisterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4A729E0A2E0C4DE9004E1E9C /* Build configuration list for PBXNativeTarget "JobTwisterTests" */;
+			buildPhases = (
+				4A729DEE2E0C4DE9004E1E9C /* Sources */,
+				4A729DEF2E0C4DE9004E1E9C /* Frameworks */,
+				4A729DF02E0C4DE9004E1E9C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4A729DF42E0C4DE9004E1E9C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4A729DF52E0C4DE9004E1E9C /* JobTwisterTests */,
+			);
+			name = JobTwisterTests;
+			packageProductDependencies = (
+			);
+			productName = JobTwisterTests;
+			productReference = 4A729DF22E0C4DE9004E1E9C /* JobTwisterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		4A729DFB2E0C4DE9004E1E9C /* JobTwisterUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4A729E0D2E0C4DE9004E1E9C /* Build configuration list for PBXNativeTarget "JobTwisterUITests" */;
+			buildPhases = (
+				4A729DF82E0C4DE9004E1E9C /* Sources */,
+				4A729DF92E0C4DE9004E1E9C /* Frameworks */,
+				4A729DFA2E0C4DE9004E1E9C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4A729DFE2E0C4DE9004E1E9C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4A729DFF2E0C4DE9004E1E9C /* JobTwisterUITests */,
+			);
+			name = JobTwisterUITests;
+			packageProductDependencies = (
+			);
+			productName = JobTwisterUITests;
+			productReference = 4A729DFC2E0C4DE9004E1E9C /* JobTwisterUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4A729DD92E0C4DE8004E1E9C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					4A729DE02E0C4DE8004E1E9C = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					4A729DF12E0C4DE9004E1E9C = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 4A729DE02E0C4DE8004E1E9C;
+					};
+					4A729DFB2E0C4DE9004E1E9C = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 4A729DE02E0C4DE8004E1E9C;
+					};
+				};
+			};
+			buildConfigurationList = 4A729DDC2E0C4DE8004E1E9C /* Build configuration list for PBXProject "JobTwister" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4A729DD82E0C4DE8004E1E9C;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 4A729DE22E0C4DE8004E1E9C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4A729DE02E0C4DE8004E1E9C /* JobTwister */,
+				4A729DF12E0C4DE9004E1E9C /* JobTwisterTests */,
+				4A729DFB2E0C4DE9004E1E9C /* JobTwisterUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4A729DDF2E0C4DE8004E1E9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4A729DF02E0C4DE9004E1E9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4A729DFA2E0C4DE9004E1E9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4A729DDD2E0C4DE8004E1E9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4A729DEE2E0C4DE9004E1E9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4A729DF82E0C4DE9004E1E9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4A729DF42E0C4DE9004E1E9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4A729DE02E0C4DE8004E1E9C /* JobTwister */;
+			targetProxy = 4A729DF32E0C4DE9004E1E9C /* PBXContainerItemProxy */;
+		};
+		4A729DFE2E0C4DE9004E1E9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4A729DE02E0C4DE8004E1E9C /* JobTwister */;
+			targetProxy = 4A729DFD2E0C4DE9004E1E9C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		4A729E062E0C4DE9004E1E9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = JobTwister/JobTwister.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = NA3FLDPMP4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = JobTwister/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TwisterMc.JobTwister;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		4A729E072E0C4DE9004E1E9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = JobTwister/JobTwister.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = NA3FLDPMP4;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = JobTwister/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TwisterMc.JobTwister;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		4A729E082E0C4DE9004E1E9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4A729E092E0C4DE9004E1E9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		4A729E0B2E0C4DE9004E1E9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TwisterMc.JobTwisterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JobTwister.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/JobTwister";
+				XROS_DEPLOYMENT_TARGET = 2.5;
+			};
+			name = Debug;
+		};
+		4A729E0C2E0C4DE9004E1E9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TwisterMc.JobTwisterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/JobTwister.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/JobTwister";
+				XROS_DEPLOYMENT_TARGET = 2.5;
+			};
+			name = Release;
+		};
+		4A729E0E2E0C4DE9004E1E9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TwisterMc.JobTwisterUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = JobTwister;
+				XROS_DEPLOYMENT_TARGET = 2.5;
+			};
+			name = Debug;
+		};
+		4A729E0F2E0C4DE9004E1E9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = TwisterMc.JobTwisterUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TEST_TARGET_NAME = JobTwister;
+				XROS_DEPLOYMENT_TARGET = 2.5;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4A729DDC2E0C4DE8004E1E9C /* Build configuration list for PBXProject "JobTwister" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A729E082E0C4DE9004E1E9C /* Debug */,
+				4A729E092E0C4DE9004E1E9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4A729E052E0C4DE9004E1E9C /* Build configuration list for PBXNativeTarget "JobTwister" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A729E062E0C4DE9004E1E9C /* Debug */,
+				4A729E072E0C4DE9004E1E9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4A729E0A2E0C4DE9004E1E9C /* Build configuration list for PBXNativeTarget "JobTwisterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A729E0B2E0C4DE9004E1E9C /* Debug */,
+				4A729E0C2E0C4DE9004E1E9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4A729E0D2E0C4DE9004E1E9C /* Build configuration list for PBXNativeTarget "JobTwisterUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4A729E0E2E0C4DE9004E1E9C /* Debug */,
+				4A729E0F2E0C4DE9004E1E9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4A729DD92E0C4DE8004E1E9C /* Project object */;
+}
