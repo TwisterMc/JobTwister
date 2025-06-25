@@ -9,33 +9,42 @@ struct JobListItemView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(job.jobTitle)
                     .font(.headline)
-                    .foregroundStyle(.primary)
+                    .foregroundColor(.primary)
                 
                 Text(job.companyName)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
                 
                 HStack(spacing: 8) {
                     Text(job.dateApplied, format: .dateTime.month().day().year())
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     
-                    HStack(spacing: 4) {
+                    Text(job.workplaceType.rawValue)
+                        .font(.caption)
+                                                               .padding(.horizontal, 6)
+                                                               .padding(.vertical, 2)
+                                                               .background(
+                                                                   RoundedRectangle(cornerRadius: 4)
+                                                                       .fill(Color.workplaceTypeColor(job.workplaceType).opacity(0.2))
+                                                               )
+                                                               .foregroundColor(Color.workplaceTypeColor(job.workplaceType))
+                }
+                HStack(spacing: 8) {
+                    
                         if job.hasInterview {
-                            Image(systemName: "calendar.badge.clock")
-                                .foregroundStyle(.green)
-                        }
+                            Label("Interview", systemImage: "calendar.badge.clock")
+                                                                        .font(.caption)
+                                                                        .foregroundColor(.green)
+                                                                }
+                        
                         if job.isDenied {
-                            Image(systemName: "xmark.circle")
-                                .foregroundStyle(.red)
+                            Label("Denied", systemImage: "xmark.circle")
+                                                                        .font(.caption)
+                                                                        .foregroundColor(.red)
                         }
-                        Text(job.workplaceType.rawValue)
-                            .font(.caption)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(.quaternary.opacity(0.5))
-                            .clipShape(Capsule())
-                    }
+                        
+                    
                 }
             }
             Spacer()
