@@ -83,6 +83,9 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity)
                         .background(selectedJob?.id == job.id ? Color.accentColor.opacity(0.1) : Color.accentColor.opacity(0))
                         .cornerRadius(8)
+                        .alignmentGuide(.listRowSeparatorLeading) { viewDimensions in
+                            return -viewDimensions.width
+                        }
                     }
                     .buttonStyle(.borderless)
                 }
