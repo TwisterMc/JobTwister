@@ -18,6 +18,7 @@ enum WorkplaceType: String, Codable {
 final class Job {
     @Attribute(.unique) var id: String
     var dateApplied: Date
+    var lastModified: Date
     var companyName: String
     var jobTitle: String
     var url: URL?
@@ -42,6 +43,7 @@ final class Job {
          workplaceType: WorkplaceType = .remote) {
         self.id = UUID().uuidString
         self.dateApplied = dateApplied
+        self.lastModified = Date()
         self.companyName = companyName
         self.jobTitle = jobTitle
         self.url = url
