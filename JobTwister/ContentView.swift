@@ -225,8 +225,8 @@ struct ContentView: View {
                                     }
                                 }
                                 
-                                if let salary = selectedJob!.salary {
-                                    DetailRow(title: "Salary", value: formatSalary(salary))
+                                if let salaryMin = selectedJob!.salaryMin, let salaryMax = selectedJob!.salaryMax {
+                                    DetailRow(title: "Salary", value: formatSalary(salaryMin, salaryMax))
                                 }
                                 
                                 DetailRow(title: "Work Type", value: selectedJob!.workplaceType.rawValue)
@@ -303,11 +303,18 @@ struct ContentView: View {
         }
     }
     
-    private func formatSalary(_ salary: Double) -> String {
+    private func formatSalary(_ min: Double?, _ max: Double?) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: salary)) ?? "$\(Int(salary))"
+        
+        if let min = min {
+            if let max = max {
+                return "\(formatter.string(from: NSNumber(value: min)) ?? "$\(Int(min))") - \(formatter.string(from: NSNumber(value: max)) ?? "$\(Int(max))")"
+            }
+            return formatter.string(from: NSNumber(value: min)) ?? "$\(Int(min))"
+        }
+        return "Not specified"
     }
 }
 
@@ -370,7 +377,8 @@ struct JobFormView: View {
     @State private var companyName: String
     @State private var jobTitle: String
     @State private var urlString: String
-    @State private var salary: Double?
+    @State private var salaryMin: Double?
+    @State private var salaryMax: Double?
     @State private var hasInterview: Bool
     @State private var interviewDate: Date
     @State private var isDenied: Bool
@@ -383,7 +391,8 @@ struct JobFormView: View {
         _companyName = State(initialValue: job?.companyName ?? "")
         _jobTitle = State(initialValue: job?.jobTitle ?? "")
         _urlString = State(initialValue: job?.url?.absoluteString ?? "")
-        _salary = State(initialValue: job?.salary)
+        _salaryMin = State(initialValue: job?.salaryMin)
+        _salaryMax = State(initialValue: job?.salaryMax)
         _hasInterview = State(initialValue: job?.hasInterview ?? false)
         _interviewDate = State(initialValue: job?.interviewDate ?? Date())
         _isDenied = State(initialValue: job?.isDenied ?? false)
@@ -401,7 +410,11 @@ struct JobFormView: View {
             }
             
             Section("Details") {
-                TextField("Salary", value: $salary, format: .currency(code: "USD"))
+                HStack {
+                    TextField("Minimum Salary", value: $salaryMin, format: .currency(code: "USD"))
+                    Text("-")
+                    TextField("Maximum Salary", value: $salaryMax, format: .currency(code: "USD"))
+                }
                 Picker("Work Type", selection: $workplaceType) {
                     ForEach([WorkplaceType.remote, .hybrid, .inOffice], id: \.self) { type in
                         Text(type.rawValue).tag(type)
@@ -456,7 +469,8 @@ struct JobFormView: View {
             existingJob.companyName = companyName
             existingJob.jobTitle = jobTitle
             existingJob.url = url
-            existingJob.salary = salary
+            existingJob.salaryMin = salaryMin
+            existingJob.salaryMax = salaryMax
             existingJob.hasInterview = hasInterview
             existingJob.interviewDate = hasInterview ? interviewDate : nil
             existingJob.isDenied = isDenied
@@ -469,7 +483,8 @@ struct JobFormView: View {
                 companyName: companyName,
                 jobTitle: jobTitle,
                 url: url,
-                salary: salary,
+                salaryMin: salaryMin,
+                salaryMax: salaryMax,
                 hasInterview: hasInterview,
                 interviewDate: hasInterview ? interviewDate : nil,
                 isDenied: isDenied,

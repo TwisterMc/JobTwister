@@ -21,7 +21,8 @@ final class Job {
     var companyName: String
     var jobTitle: String
     var url: URL?
-    var salary: Double?
+    var salaryMin: Double?
+    var salaryMax: Double?
     var hasInterview: Bool
     var interviewDate: Date?
     var isDenied: Bool
@@ -32,7 +33,8 @@ final class Job {
          companyName: String = "",
          jobTitle: String = "",
          url: URL? = nil,
-         salary: Double? = nil,
+         salaryMin: Double? = nil,
+         salaryMax: Double? = nil,
          hasInterview: Bool = false,
          interviewDate: Date? = nil,
          isDenied: Bool = false,
@@ -43,7 +45,8 @@ final class Job {
         self.companyName = companyName
         self.jobTitle = jobTitle
         self.url = url
-        self.salary = salary
+        self.salaryMin = salaryMin
+        self.salaryMax = salaryMax
         self.hasInterview = hasInterview
         self.interviewDate = interviewDate
         self.isDenied = isDenied
