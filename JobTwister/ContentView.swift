@@ -230,7 +230,7 @@ struct ContentView: View {
                                 }
                                 
                                 DetailRow(title: "Work Type", value: selectedJob!.workplaceType.rawValue)
-                                    .foregroundColor(workplaceTypeColor(selectedJob!.workplaceType))
+                                    
                             }
                             
                             Section("Status") {
