@@ -16,7 +16,7 @@ struct JobListView: View {
                 }) {
                     JobListItemView(job: job, isSelected: selectedJob?.id == job.id)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.borderless)
             }
         }
         .listStyle(.plain)
