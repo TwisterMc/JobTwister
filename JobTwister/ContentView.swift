@@ -91,6 +91,7 @@ struct ContentView: View {
                 }
             }
             .listStyle(.plain)
+            .id(UUID())  // This forces the List to recreate and scroll to top when data changes
             .searchable(text: $searchText, prompt: "Search jobs...")
             .navigationTitle("Job Applications")
             .toolbar {
