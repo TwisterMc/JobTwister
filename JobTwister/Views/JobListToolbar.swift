@@ -26,7 +26,7 @@ struct JobListToolbar: View {
             Button {
                 selectedJob = nil
             } label: {
-                Image(systemName: "chart.bar.fill")
+                Image(systemName: "tachometer")
             }
             
             Button {
