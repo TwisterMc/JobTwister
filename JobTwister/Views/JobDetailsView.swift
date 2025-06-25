@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct JobDetailsView: View {
-    let job: Job
+    @Bindable var job: Job
     let onEdit: () -> Void
     let onDelete: () -> Void
     
@@ -73,17 +73,21 @@ struct JobDetailsView: View {
                 }
                 
                 Section("Status") {
-                    Toggle("Has Interview", isOn: .constant(job.hasInterview))
+                    Toggle("Has Interview", isOn: $job.hasInterview)
                         .toggleStyle(.switch)
-                        .disabled(true)
+                        .onChange(of: job.hasInterview) { oldValue, newValue in
+                            job.lastModified = Date()
+                        }
                     
                     if job.hasInterview, let date = job.interviewDate {
                         DetailRow(title: "Interview Date", value: date.formatted(date: .long, time: .shortened))
                     }
                     
-                    Toggle("Application Denied", isOn: .constant(job.isDenied))
+                    Toggle("Application Denied", isOn: $job.isDenied)
                         .toggleStyle(.switch)
-                        .disabled(true)
+                        .onChange(of: job.isDenied) { oldValue, newValue in
+                            job.lastModified = Date()
+                        }
                 }
                 
                 if !job.notes.isEmpty {
