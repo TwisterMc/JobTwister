@@ -35,11 +35,11 @@ struct ContentView: View {
                     }) {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(job.companyName)
+                                Text(job.jobTitle)
                                     .font(.headline)
                                     .foregroundColor(.primary)
                                 
-                                Text(job.jobTitle)
+                                Text(job.companyName)
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                                 
@@ -47,6 +47,19 @@ struct ContentView: View {
                                     Text(job.dateApplied, format: .dateTime.month().day().year())
                                         .font(.caption)
                                         .foregroundColor(.secondary)
+                                    
+                                    
+                                    Text(job.workplaceType.rawValue)
+                                        .font(.caption)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .fill(workplaceTypeColor(job.workplaceType).opacity(0.2))
+                                        )
+                                        .foregroundColor(workplaceTypeColor(job.workplaceType))
+                                }
+                                HStack(spacing: 8) {
                                     
                                     if job.hasInterview {
                                         Label("Interview", systemImage: "calendar.badge.clock")
@@ -60,15 +73,7 @@ struct ContentView: View {
                                             .foregroundColor(.red)
                                     }
                                     
-                                    Text(job.workplaceType.rawValue)
-                                        .font(.caption)
-                                        .padding(.horizontal, 6)
-                                        .padding(.vertical, 2)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 4)
-                                                .fill(workplaceTypeColor(job.workplaceType).opacity(0.2))
-                                        )
-                                        .foregroundColor(workplaceTypeColor(job.workplaceType))
+                                    
                                 }
                             }
                             Spacer()
@@ -76,10 +81,10 @@ struct ContentView: View {
                         .padding(.vertical, 10)
                         .padding(.horizontal, 10)
                         .frame(maxWidth: .infinity)
-                        .background(selectedJob?.id == job.id ? Color.accentColor.opacity(0.1) : Color.clear)
+                        .background(selectedJob?.id == job.id ? Color.accentColor.opacity(0.1) : Color.accentColor.opacity(0))
                         .cornerRadius(8)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.borderless)
                 }
             }
             .listStyle(.plain)
@@ -174,11 +179,11 @@ struct ContentView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
                             VStack(alignment: .leading) {
-                                Text(selectedJob!.companyName)
+                                Text(selectedJob!.jobTitle)
                                     .font(.title)
                                     .fontWeight(.semibold)
                                 
-                                Text(selectedJob!.jobTitle)
+                                Text(selectedJob!.companyName)
                                     .font(.headline)
                                     .foregroundColor(.secondary)
                             }
