@@ -37,7 +37,7 @@ struct DashboardView: View {
         case .week:
             // Get the start of the current week
             var current = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now))!
-            // Move back by offset weeks
+            // Move back to the start of the week by offset weeks
             current = calendar.date(byAdding: .weekOfYear, value: -offsetPeriods, to: current)!
             let end = calendar.date(byAdding: .day, value: 6, to: current)!
             return (current, end)
@@ -85,106 +85,151 @@ struct DashboardView: View {
         .sorted(by: { $0.dateApplied > $1.dateApplied })
     }
     
+    var cumulativeJobs: [(date: Date, count: Int, status: String)] {
+        var runningCount = 0
+        return filteredJobs
+            .sorted(by: { $0.dateApplied < $1.dateApplied })
+            .map { job in
+                runningCount += 1
+                return (
+                    date: job.dateApplied,
+                    count: runningCount,
+                    status: job.isDenied ? "Denied" :
+                        (job.hasInterview ? "Interviewed" : "Applied")
+                )
+            }
+    }
+    
+    var periodStats: (applied: Int, interviewed: Int, denied: Int) {
+        var stats = (applied: 0, interviewed: 0, denied: 0)
+        for job in filteredJobs {
+            if job.isDenied {
+                stats.denied += 1
+            } else if job.hasInterview {
+                stats.interviewed += 1
+            } else {
+                stats.applied += 1
+            }
+        }
+        return stats
+    }
+    
+    var chartContent: some View {
+        Chart {
+            ForEach(filteredJobs) { job in
+                BarMark(
+                    x: .value("Date", job.dateApplied, unit: selectedTimeRange.unit),
+                    y: .value("Applications", 1)
+                )
+                .position(by: .value("Status",
+                    job.isDenied ? "Denied" :
+                    (job.hasInterview ? "Interviewed" : "Applied")
+                ))
+                .foregroundStyle(by: .value("Status",
+                    job.isDenied ? "Denied" :
+                    (job.hasInterview ? "Interviewed" : "Applied")
+                ))
+            }
+        }
+        .chartForegroundStyleScale([
+            "Applied": Color.blue,
+            "Interviewed": Color.green,
+            "Denied": Color.red
+        ])
+        .chartYAxis {
+            AxisMarks(position: .leading)
+        }
+        .frame(height: 200)
+        .chartXAxis {
+            AxisMarks(values: .stride(by: selectedTimeRange.unit)) { _ in
+                AxisGridLine()
+                AxisTick()
+                AxisValueLabel(format: selectedTimeRange == .year ?
+                    .dateTime.month() : .dateTime.month().day()
+                )
+            }
+        }
+    }
+    
     var body: some View {
-        VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Job Search Dashboard")
-                    .font(.title2)
-                    .fontWeight(.semibold)
+        VStack(spacing: 16) {
+            // Header Section
+            Text("Job Search Dashboard")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .padding(.bottom, 4)
+            
+            // Stats Section
+            HStack(spacing: 16) {
+                StatCardView(
+                    value: periodStats.applied,
+                    label: "Applications",
+                    systemImage: "doc.text",
+                    color: .blue
+                )
                 
-                HStack(spacing: 16) {
-                    StatCardView(
-                        value: stats.applied,
-                        label: "Applications",
-                        systemImage: "doc.text",
-                        color: .blue
-                    )
-                    
-                    StatCardView(
-                        value: stats.interviewed,
-                        label: "Interviews",
-                        systemImage: "person.2",
-                        color: .green
-                    )
-                    
-                    StatCardView(
-                        value: stats.denied,
-                        label: "Denials",
-                        systemImage: "xmark.circle",
-                        color: .red
-                    )
-                }
+                StatCardView(
+                    value: periodStats.interviewed,
+                    label: "Interviews",
+                    systemImage: "person.2",
+                    color: .green
+                )
                 
-                if !jobs.isEmpty {
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text("Recent Activity")
+                StatCardView(
+                    value: periodStats.denied,
+                    label: "Denials",
+                    systemImage: "xmark.circle",
+                    color: .red
+                )
+            }
+            
+            if !jobs.isEmpty {
+                // Chart Section
+                VStack(alignment: .leading, spacing: 16) {
+                    // Time Range Picker
+                    Picker("", selection: $selectedTimeRange) {
+                        ForEach(TimeRange.allCases, id: \.self) { range in
+                            Text(range.rawValue)
                                 .font(.headline)
-                            
-                            Spacer()
-                            
-                            Picker("Time Range", selection: $selectedTimeRange) {
-                                ForEach(TimeRange.allCases, id: \.self) { range in
-                                    Text(range.rawValue).tag(range)
-                                }
-                            }
-                            .pickerStyle(.segmented)
-                            .onChange(of: selectedTimeRange) { _, _ in
-                                offsetPeriods = 0  // Reset offset when changing time range
-                            }
+                                .tag(range)
                         }
-                        .padding(.top)
+                    }
+                    .pickerStyle(.segmented)
+                    .onChange(of: selectedTimeRange) { _, _ in
+                        offsetPeriods = 0
+                    }
+                    
+                    // Chart
+                    chartContent
+                        .padding(.vertical, 8)
+                    
+                    // Time Navigation
+                    HStack {
+                        Spacer()
                         
-                        HStack {
-                            Button(action: { offsetPeriods += 1 }) {
-                                Image(systemName: "chevron.left")
-                            }
-                            .buttonStyle(.plain)
-                            
-                            Text(dateRangeText)
-                                .font(.subheadline)
-                            
-                            Button(action: {
-                                offsetPeriods = max(0, offsetPeriods - 1)
-                            }) {
-                                Image(systemName: "chevron.right")
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(offsetPeriods == 0)
-                            
-                            Spacer()
+                        Button(action: { offsetPeriods += 1 }) {
+                            Image(systemName: "chevron.left")
                         }
+                        .buttonStyle(.plain)
                         
-                        Chart(filteredJobs) { job in
-                            BarMark(
-                                x: .value("Date", job.dateApplied, unit: selectedTimeRange.unit),
-                                y: .value("Applications", 1)
-                            )
-                            .foregroundStyle(by: .value("Status",
-                                job.isDenied ? "Denied" :
-                                (job.hasInterview ? "Interviewed" : "Applied")
-                            ))
+                        Text(dateRangeText)
+                            .font(.subheadline)
+                            .frame(minWidth: 120)
+                        
+                        Button(action: {
+                            offsetPeriods = max(0, offsetPeriods - 1)
+                        }) {
+                            Image(systemName: "chevron.right")
                         }
-                        .chartForegroundStyleScale([
-                            "Applied": Color.blue,
-                            "Interviewed": Color.green,
-                            "Denied": Color.red
-                        ])
-                        .frame(height: 200)
-                        .chartXAxis {
-                            AxisMarks(values: .stride(by: selectedTimeRange.unit)) { _ in
-                                AxisGridLine()
-                                AxisTick()
-                                AxisValueLabel(format: selectedTimeRange == .year ?
-                                    .dateTime.month() : .dateTime.month().day()
-                                )
-                            }
-                        }
+                        .buttonStyle(.plain)
+                        .disabled(offsetPeriods == 0)
+                        
+                        Spacer()
                     }
                 }
             }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }
