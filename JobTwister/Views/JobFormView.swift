@@ -79,6 +79,7 @@ struct JobFormView: View {
             
             Section("Notes") {
                 TextEditor(text: $notes)
+                    .padding(10)
                     .frame(height: 150)
                     .cornerRadius(8)
                     .overlay(
@@ -86,6 +87,7 @@ struct JobFormView: View {
                             .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
                     )
             }
+            .background(Color.white)
         }
         .formStyle(.grouped)
         .toolbar {
