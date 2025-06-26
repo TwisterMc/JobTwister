@@ -46,21 +46,8 @@ struct JobListView: View {
                 )
             }
         }
-        .modifier(ConditionalSearchModifier(isVisible: isSidebarVisible, searchText: $searchText))
+        .searchable(text: $searchText, isPresented: .constant(isSidebarVisible), prompt: "Search jobs")
     }
 }
 
-private struct ConditionalSearchModifier: ViewModifier {
-    let isVisible: Bool
-    @Binding var searchText: String
-    
-    func body(content: Content) -> some View {
-        Group {
-            if isVisible {
-                content.searchable(text: $searchText, prompt: "Search jobs")
-            } else {
-                content
-            }
-        }
-    }
-}
+
