@@ -57,12 +57,15 @@ struct JobDetailsView: View {
                         DetailRow(title: "Date Applied", value: job.dateApplied.formatted(date: .long, time: .omitted))
                         
                         if let url = job.url {
-                            HStack {
-                                Text("Job URL").bold()
-                                Link(url.absoluteString, destination: url)
-                                    .lineLimit(1)
-                                    .truncationMode(.middle)
-                            }
+                            DetailRow(
+                                title: "Job URL",
+                                value: "",
+                                content: {
+                                    Link(url.absoluteString, destination: url)
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                }
+                            )
                         }
                         
                         if let salaryMin = job.salaryMin, let salaryMax = job.salaryMax {
