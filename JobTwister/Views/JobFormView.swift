@@ -42,9 +42,6 @@ struct JobFormView: View {
                 TextField("Company Name", text: $companyName)
                 TextField("Job Title", text: $jobTitle)
                 TextField("Job URL", text: $urlString)
-            }
-            
-            Section("Details") {
                 HStack {
                     TextField("Minimum Salary", value: $salaryMin, format: .currency(code: "USD"))
                     Text("-")
@@ -57,6 +54,10 @@ struct JobFormView: View {
                 }
                 .pickerStyle(.menu)
             }
+            
+            
+
+            
             
             Section("Status") {
                 Toggle("Has Interview", isOn: $hasInterview)
