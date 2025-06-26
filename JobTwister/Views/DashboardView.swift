@@ -144,13 +144,24 @@ struct DashboardView: View {
     }
     
     var chartContent: some View {
-        Chart(jobEvents) { event in
-            BarMark(
-                x: .value("Date", event.date, unit: selectedTimeRange.unit),
-                y: .value("Events", 1)
-            )
-            .position(by: .value("Status", event.status))
-            .foregroundStyle(by: .value("Status", event.status))
+        Chart {
+            if jobEvents.isEmpty {
+                // Add an invisible mark to force the chart to show axes
+                RectangleMark(
+                    x: .value("Date", dateRange.start, unit: selectedTimeRange.unit),
+                    y: .value("Events", 1)
+                )
+                .opacity(0)
+            } else {
+                ForEach(jobEvents) { event in
+                    BarMark(
+                        x: .value("Date", event.date, unit: selectedTimeRange.unit),
+                        y: .value("Events", 1)
+                    )
+                    .position(by: .value("Status", event.status))
+                    .foregroundStyle(by: .value("Status", event.status))
+                }
+            }
         }
         .chartForegroundStyleScale([
             "Applied": Color.blue,
