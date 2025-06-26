@@ -38,16 +38,28 @@ struct JobFormView: View {
     var body: some View {
         Form {
             Section("Basic Information") {
-                DatePicker("Date Applied", selection: $dateApplied, displayedComponents: .date)
-                TextField("Company Name", text: $companyName)
-                TextField("Job Title", text: $jobTitle)
-                TextField("Job URL", text: $urlString)
+                DatePicker(selection: $dateApplied, displayedComponents: .date) {
+                    Label("Date Applied", systemImage: "calendar")
+                }
                 HStack {
+                    Image(systemName: "building.2").foregroundColor(.secondary)
+                    TextField("Company Name", text: $companyName)
+                }
+                HStack {
+                    Image(systemName: "briefcase").foregroundColor(.secondary)
+                    TextField("Job Title", text: $jobTitle)
+                }
+                HStack {
+                    Image(systemName: "link").foregroundColor(.secondary)
+                    TextField("Job URL", text: $urlString)
+                }
+                HStack {
+                    Image(systemName: "dollarsign.circle").foregroundColor(.secondary)
                     TextField("Minimum Salary", value: $salaryMin, format: .currency(code: "USD"))
                     Text("-")
                     TextField("Maximum Salary", value: $salaryMax, format: .currency(code: "USD"))
                 }
-                Picker("Work Type", selection: $workplaceType) {
+                Picker(selection: $workplaceType, label: Label("Work Type", systemImage: "building.2")) {
                     ForEach([WorkplaceType.remote, .hybrid, .inOffice], id: \.self) { type in
                         Text(type.rawValue).tag(type)
                     }
@@ -60,25 +72,30 @@ struct JobFormView: View {
             
             
             Section("Status") {
-                Toggle("Has Interview", isOn: $hasInterview)
-                    .toggleStyle(.switch)
-                
+                Toggle(isOn: $hasInterview) {
+                    Label("Has Interview", systemImage: "calendar.badge.clock")
+                }
+                .toggleStyle(.switch)
                 if hasInterview {
-                    DatePicker("Interview Date", selection: $interviewDate)
+                    DatePicker("Interview Date",selection: $interviewDate) 
+                    .padding(.leading, 40)
                 }
-                
-                Toggle("Application Denied", isOn: $isDenied)
-                    .toggleStyle(.switch)
-                
+                Toggle(isOn: $isDenied) {
+                    Label("Application Denied", systemImage: "xmark.circle")
+                }
+                .toggleStyle(.switch)
                 if isDenied {
-                    DatePicker("Denied Date", selection: Binding(
-                        get: { deniedDate ?? Date() },
-                        set: { deniedDate = $0 }
-                    ), displayedComponents: [.date])
-                }
+                   DatePicker("Denied Date", selection: Binding(
+                       get: { deniedDate ?? Date() },
+                       set: { deniedDate = $0 }
+                   ), displayedComponents: [.date])
+                   .padding(.leading, 40)
+               }
             }
             
-            Section("Notes") {
+            Section {
+                Label("Notes", systemImage: "note.text")
+                    .font(.headline)
                 TextEditor(text: $notes)
                     .padding(10)
                     .frame(height: 150)

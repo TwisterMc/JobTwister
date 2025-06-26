@@ -39,12 +39,12 @@ struct JobDetailsView: View {
                         Button(action: onEdit) {
                             Label("Edit", systemImage: "pencil")
                         }
-                        .buttonStyle(.link)
+                        .buttonStyle(.bordered)
                         
                         Button(role: .destructive, action: onDelete) {
                             Label("Delete", systemImage: "trash")
                         }
-                        .buttonStyle(.borderless)
+                        .buttonStyle(.borderedProminent)
                         .tint(.red)
                     }
                 }
@@ -80,37 +80,46 @@ struct JobDetailsView: View {
                     }
                     
                     Section("Status") {
-                        Toggle("Has Interview", isOn: $job.hasInterview)
-                            .toggleStyle(.switch)
-                            .onChange(of: job.hasInterview) { oldValue, newValue in
-                                job.lastModified = Date()
+                        Toggle(isOn: $job.hasInterview) {
+                            Label("Has Interview", systemImage: "calendar.badge.clock")
+                        }
+                        .toggleStyle(.switch)
+                        .onChange(of: job.hasInterview) { oldValue, newValue in
+                            if newValue && job.interviewDate == nil {
+                                job.interviewDate = Date()
                             }
+                                job.lastModified = Date()
+                            }                        
+                        
                         
                         if job.hasInterview, let date = job.interviewDate {
                             DetailRow(title: "Interview Date", value: date.formatted(date: .long, time: .shortened))
                                 .bold(false)
-                                .icon("calendar.badge.clock")
+                                .padding(.leading, 40)
                         }
                         
-                        Toggle("Application Denied", isOn: Binding(
+                        Toggle(isOn: Binding(
                             get: { job.isDenied },
                             set: { newValue in
                                 job.isDenied = newValue
                                 job.deniedDate = newValue ? Date() : nil
                                 job.lastModified = Date()
                             }
-                        ))
+                        )) {
+                            Label("Application Denied", systemImage: "xmark.circle")
+                        }
                         .toggleStyle(.switch)
                         
                         if job.isDenied, let date = job.deniedDate {
                             DetailRow(title: "Denied Date", value: date.formatted(date: .long, time: .omitted))
                                 .bold(false)
-                                .icon("xmark.circle")
+                                .padding(.leading, 40)
                         }
                     }
                     
                     if !job.notes.isEmpty {
-                        Section("Notes") {
+                        Section() {
+                            Label("Notes", systemImage: "note.text")
                             Text(job.notes)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding()
