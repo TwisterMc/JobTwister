@@ -6,9 +6,9 @@ import UniformTypeIdentifiers
 
 class CSVHandler {
     static func exportJobs(_ jobs: [Job]) -> String {
-        let header = "Company Name,Job Title,Notes,Has Interview,Is Denied,Work Type,Date Applied,Last Modified\n"
+        let header = "ID,Company Name,Job Title,Notes,Has Interview,Is Denied,Work Type,Date Applied,Last Modified\n"
         let rows = jobs.map { job in
-            "\(job.companyName),\(job.jobTitle),\"\(job.notes.replacingOccurrences(of: "\"", with: "\"\""))\",\(job.hasInterview),\(job.isDenied),\(job.workplaceType.rawValue),\(formatDate(job.dateApplied)),\(formatDate(job.lastModified))"
+            "\(job.id),\(job.companyName),\(job.jobTitle),\"\(job.notes.replacingOccurrences(of: "\"", with: "\"\""))\",\(job.hasInterview),\(job.isDenied),\(job.workplaceType.rawValue),\(formatDate(job.dateApplied)),\(formatDate(job.lastModified))"
         }.joined(separator: "\n")
         return header + rows
     }
@@ -46,18 +46,27 @@ class CSVHandler {
         }
         columns.append(currentColumn)
         
-        guard columns.count >= 8 else { return nil }
+        // Pad array with empty strings if we don't have enough columns
+        while columns.count < 9 {
+            columns.append("")
+        }
         
         let job = Job(
-            dateApplied: parseDate(columns[6]) ?? Date(),
-            companyName: columns[0].trimmingCharacters(in: .whitespaces),
-            jobTitle: columns[1].trimmingCharacters(in: .whitespaces),
-            hasInterview: Bool(columns[3]) ?? false,
-            isDenied: Bool(columns[4]) ?? false,
-            notes: columns[2].trimmingCharacters(in: .whitespaces),
-            workplaceType: WorkplaceType(rawValue: columns[5]) ?? .remote
+            dateApplied: parseDate(columns[7]) ?? Date(),
+            companyName: columns[1].trimmingCharacters(in: .whitespaces),
+            jobTitle: columns[2].trimmingCharacters(in: .whitespaces),
+            hasInterview: columns[4].lowercased() == "true",
+            isDenied: columns[5].lowercased() == "true",
+            notes: columns[3].trimmingCharacters(in: .whitespaces),
+            workplaceType: WorkplaceType(rawValue: columns[6]) ?? .remote
         )
-        job.lastModified = Date()  // Set lastModified to current date when importing
+        
+        // If ID exists in CSV, use it, otherwise Job init will create a new one
+        if !columns[0].isEmpty {
+            job.id = columns[0]
+        }
+        
+        job.lastModified = Date()
         return job
     }
     
