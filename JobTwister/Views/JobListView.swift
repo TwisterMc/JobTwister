@@ -9,8 +9,11 @@ struct JobRow: View {
             selectedJob = job
         }) {
             JobListItemView(job: job, isSelected: selectedJob?.id == job.id)
+                .contentShape(Rectangle())
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(.plain)
+        .background(selectedJob?.id == job.id ? Color.accentColor.opacity(0.1) : Color.clear)
+        .cornerRadius(6)
     }
 }
 

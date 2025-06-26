@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct StatCardView: View {
+    @Environment(\.colorScheme) private var colorScheme
     let value: Int
     let label: String
     let systemImage: String

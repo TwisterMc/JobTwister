@@ -24,9 +24,9 @@ final class Job {
     var url: URL?
     var salaryMin: Double?
     var salaryMax: Double?
-    var hasInterview: Bool
+    var hasInterview: Bool = false
     var interviewDate: Date?
-    var isDenied: Bool
+    var isDenied: Bool = false
     var deniedDate: Date?
     var notes: String
     var workplaceType: WorkplaceType

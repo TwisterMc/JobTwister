@@ -67,6 +67,7 @@ struct ContentView: View {
             ScrollView {
                 if selectedJob == nil {
                     DashboardView(stats: applicationStats, jobs: jobs)
+                        .frame(maxWidth: 800)  // Limit maximum width for better readability
                 } else {
                     JobDetailsView(
                         job: selectedJob!,
@@ -79,10 +80,12 @@ struct ContentView: View {
                             }
                         }
                     )
+                    .frame(maxWidth: 800)  // Limit maximum width for better readability
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(NSColor.windowBackgroundColor))
+            .scrollIndicators(.automatic)
         }
         .onChange(of: searchText) { _, newValue in
             if !newValue.isEmpty {
@@ -134,6 +137,9 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: Job.self, inMemory: true)
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Job.self, configurations: config)
+    
+    return ContentView()
+        .modelContainer(container)
 }
