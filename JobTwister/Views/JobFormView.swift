@@ -93,19 +93,13 @@ struct JobFormView: View {
                }
             }
             
-            Section {
-                Label("Notes", systemImage: "note.text")
-                    .font(.headline)
-                TextEditor(text: $notes)
-                    .padding(10)
-                    .frame(height: 150)
-                    .cornerRadius(8)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                    )
-            }
-            .background(Color.white)
+            Section("Notes") {
+                            TextEditor(text: $notes)
+                    .scrollContentBackground(.hidden)
+                                .padding(5)
+                                .frame(height: 150)
+                                .cornerRadius(8)
+                        }
         }
         .formStyle(.grouped)
         .toolbar {
