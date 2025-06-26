@@ -31,7 +31,6 @@ struct JobListView: View {
         }
         .listStyle(.plain)
         .id(UUID())
-        .searchable(text: $searchText, prompt: "Search jobs...")
         .navigationTitle("Job Applications")
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
@@ -42,6 +41,22 @@ struct JobListView: View {
                     onSort: onSort,
                     currentSortOption: currentSortOption
                 )
+            }
+        }
+        .modifier(ConditionalSearchModifier(isVisible: isSidebarVisible, searchText: $searchText))
+    }
+}
+
+private struct ConditionalSearchModifier: ViewModifier {
+    let isVisible: Bool
+    @Binding var searchText: String
+    
+    func body(content: Content) -> some View {
+        Group {
+            if isVisible {
+                content.searchable(text: $searchText, prompt: "Search jobs")
+            } else {
+                content
             }
         }
     }

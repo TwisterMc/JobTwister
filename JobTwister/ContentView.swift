@@ -84,6 +84,11 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(NSColor.windowBackgroundColor))
         }
+        .onChange(of: searchText) { _, newValue in
+            if !newValue.isEmpty {
+                columnVisibility = .doubleColumn
+            }
+        }
         .sheet(isPresented: $showingAddJob) {
             NavigationStack {
                 JobFormView(job: showingAddJob && selectedJob != nil ? selectedJob : nil)
