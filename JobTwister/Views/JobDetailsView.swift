@@ -55,6 +55,7 @@ struct JobDetailsView: View {
                 Form {
                     Section {
                         DetailRow(title: "Date Applied", value: job.dateApplied.formatted(date: .long, time: .omitted))
+                            .icon("calendar")
                         
                         if let url = job.url {
                             DetailRow(
@@ -66,13 +67,16 @@ struct JobDetailsView: View {
                                         .truncationMode(.middle)
                                 }
                             )
+                            .icon("link")
                         }
                         
                         if let salaryMin = job.salaryMin, let salaryMax = job.salaryMax {
                             DetailRow(title: "Salary", value: formatSalary(salaryMin, salaryMax))
+                                .icon("dollarsign.circle")
                         }
                         
                         DetailRow(title: "Work Type", value: job.workplaceType.rawValue)
+                            .icon("building.2")
                     }
                     
                     Section("Status") {
@@ -84,6 +88,8 @@ struct JobDetailsView: View {
                         
                         if job.hasInterview, let date = job.interviewDate {
                             DetailRow(title: "Interview Date", value: date.formatted(date: .long, time: .shortened))
+                                .bold(false)
+                                .icon("calendar.badge.clock")
                         }
                         
                         Toggle("Application Denied", isOn: Binding(
@@ -98,6 +104,8 @@ struct JobDetailsView: View {
                         
                         if job.isDenied, let date = job.deniedDate {
                             DetailRow(title: "Denied Date", value: date.formatted(date: .long, time: .omitted))
+                                .bold(false)
+                                .icon("xmark.circle")
                         }
                     }
                     
