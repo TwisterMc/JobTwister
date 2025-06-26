@@ -49,8 +49,8 @@ struct JobDetailsView: View {
                     }
                 }
                 .padding()
+                .background(Color(NSColor.controlBackgroundColor).opacity(0.5))
                 
-                Divider()
                 
                 Form {
                     Section {
