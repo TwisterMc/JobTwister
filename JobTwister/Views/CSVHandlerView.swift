@@ -45,9 +45,7 @@ struct CSVHandlerView: View {
             if panel.runModal() == .OK, let url = panel.url {
                 do {
                     let csvString = try String(contentsOf: url)
-                    let jobs = CSVHandler.importJobs(from: csvString)
-                    jobs.forEach { modelContext.insert($0) }
-                    try modelContext.save()
+                    try CSVHandler.importJobs(csvString, modelContext: modelContext)
                     dismiss()
                 } catch {
                     self.error = "Error importing CSV: \(error.localizedDescription)"
@@ -68,7 +66,7 @@ struct CSVHandlerView: View {
                 do {
                     let descriptor = FetchDescriptor<Job>()
                     let jobs = try modelContext.fetch(descriptor)
-                    let csvString = CSVHandler.exportJobs(jobs)
+                    let csvString = try CSVHandler.exportJobs(jobs)
                     try csvString.write(to: url, atomically: true, encoding: .utf8)
                     dismiss()
                 } catch {

@@ -24,12 +24,19 @@ final class Job {
     var url: URL?
     var salaryMin: Double?
     var salaryMax: Double?
-    var hasInterview: Bool
-    var interviewDate: Date?
     var isDenied: Bool
     var deniedDate: Date?
     var notes: String
     var workplaceType: WorkplaceType
+    @Relationship(deleteRule: .cascade) var interviews: [Interview] = []
+    
+    var hasInterview: Bool {
+        !interviews.isEmpty
+    }
+    
+    var latestInterviewDate: Date? {
+        interviews.max(by: { $0.date < $1.date })?.date
+    }
     
     init(dateApplied: Date = Date(),
          companyName: String = "",
@@ -37,12 +44,11 @@ final class Job {
          url: URL? = nil,
          salaryMin: Double? = nil,
          salaryMax: Double? = nil,
-         hasInterview: Bool = false,
-         interviewDate: Date? = nil,
          isDenied: Bool = false,
          deniedDate: Date? = nil,
          notes: String = "",
-         workplaceType: WorkplaceType = .remote) {
+         workplaceType: WorkplaceType = .remote,
+         interviews: [Interview] = []) {
         self.id = UUID().uuidString
         self.dateApplied = dateApplied
         self.lastModified = Date()
@@ -51,11 +57,10 @@ final class Job {
         self.url = url
         self.salaryMin = salaryMin
         self.salaryMax = salaryMax
-        self.hasInterview = hasInterview
-        self.interviewDate = interviewDate
         self.isDenied = isDenied
         self.deniedDate = deniedDate
         self.notes = notes
         self.workplaceType = workplaceType
+        self.interviews = interviews
     }
 }

@@ -2,8 +2,12 @@ import SwiftUI
 
 struct JobDetailsView: View {
     @Bindable var job: Job
-    let onEdit: () -> Void
-    let onDelete: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var showingAddInterview = false
+    @State private var interviewDate = Date()
+    @State private var interviewNotes = ""
+    var onEdit: () -> Void
+    var onDelete: () -> Void
     
     private func formatSalary(_ min: Double?, _ max: Double?) -> String {
         let formatter = NumberFormatter()
@@ -73,14 +77,21 @@ struct JobDetailsView: View {
                 }
                 
                 Section("Status") {
-                    Toggle("Has Interview", isOn: $job.hasInterview)
-                        .toggleStyle(.switch)
-                        .onChange(of: job.hasInterview) { oldValue, newValue in
-                            job.lastModified = Date()
+                    Toggle("Has Interview", isOn: Binding(
+                        get: { job.hasInterview },
+                        set: { newValue in
+                            if newValue && !job.hasInterview {
+                                showingAddInterview = true
+                            } else if !newValue && job.hasInterview {
+                                job.interviews.removeAll()
+                                job.lastModified = Date()
+                            }
                         }
+                    ))
+                        .toggleStyle(.switch)
                     
-                    if job.hasInterview, let date = job.interviewDate {
-                        DetailRow(title: "Interview Date", value: date.formatted(date: .long, time: .shortened))
+                    if job.hasInterview, let date = job.latestInterviewDate {
+                        DetailRow(title: "Latest Interview", value: date.formatted(date: .long, time: .shortened))
                     }
                     
                     Toggle("Application Denied", isOn: Binding(
@@ -98,6 +109,37 @@ struct JobDetailsView: View {
                     }
                 }
                 
+                Section("Interviews") {
+                    ForEach(job.interviews.sorted(by: { $0.date > $1.date })) { interview in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Round \(interview.round)")
+                                .font(.headline)
+                            Text(interview.date.formatted(date: .long, time: .omitted))
+                                .foregroundStyle(.secondary)
+                            if !interview.notes.isEmpty {
+                                Text(interview.notes)
+                                    .font(.subheadline)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .onDelete { indexSet in
+                        let sortedInterviews = job.interviews.sorted(by: { $0.date > $1.date })
+                        indexSet.forEach { index in
+                            if let interviewToDelete = job.interviews.first(where: { $0.id == sortedInterviews[index].id }) {
+                                job.interviews.removeAll(where: { $0.id == interviewToDelete.id })
+                            }
+                        }
+                        job.lastModified = Date()
+                    }
+                    
+                    Button(action: {
+                        showingAddInterview = true
+                    }) {
+                        Label("Add Interview", systemImage: "plus")
+                    }
+                }
+                
                 if !job.notes.isEmpty {
                     Section("Notes") {
                         Text(job.notes)
@@ -109,6 +151,53 @@ struct JobDetailsView: View {
                 }
             }
             .formStyle(.grouped)
+        }
+        .sheet(isPresented: $showingAddInterview) {
+            NavigationStack {
+                Form {
+                    DatePicker("Interview Date", selection: $interviewDate, displayedComponents: [.date, .hourAndMinute])
+                    TextField("Interview Notes", text: $interviewNotes)
+                        .textFieldStyle(.roundedBorder)
+                }
+                .onAppear {
+                    // Initialize with current date and empty notes when sheet opens
+                    interviewDate = Date()
+                    interviewNotes = ""
+                }
+                .navigationTitle("Add Interview")
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            interviewDate = Date()
+                            interviewNotes = ""
+                            showingAddInterview = false
+                        }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Add") {
+                            // Calculate next round number
+                            let nextRound = (job.interviews.map(\.round).max() ?? 0) + 1
+                            
+                            // Create and add the new interview
+                            let newInterview = Interview(
+                                date: interviewDate,
+                                notes: interviewNotes.trimmingCharacters(in: .whitespacesAndNewlines),
+                                round: nextRound
+                            )
+                            job.interviews.append(newInterview)
+                            
+                            // Update job
+                            job.lastModified = Date()
+                            
+                            // Reset and close
+                            interviewDate = Date()
+                            interviewNotes = ""
+                            showingAddInterview = false
+                        }
+                    }
+                }
+            }
+            .presentationDetents([.medium])
         }
     }
 }

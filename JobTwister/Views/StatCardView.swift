@@ -6,6 +6,13 @@ struct StatCardView: View {
     let systemImage: String
     let color: Color
     
+    init(value: Int, label: String, systemImage: String, color: Color) {
+        self.value = value
+        self.label = label
+        self.systemImage = systemImage
+        self.color = color
+    }
+    
     var body: some View {
         VStack {
             HStack {
@@ -20,7 +27,7 @@ struct StatCardView: View {
             
             Text(label)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding()

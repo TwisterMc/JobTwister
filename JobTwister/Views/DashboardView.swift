@@ -24,244 +24,189 @@ enum TimeRange: String, CaseIterable {
 }
 
 struct DashboardView: View {
-    let stats: (applied: Int, interviewed: Int, denied: Int)
     let jobs: [Job]
     @State private var selectedTimeRange: TimeRange = .week
     @State private var offsetPeriods: Int = 0
     
-    var dateRange: (start: Date, end: Date) {
+    var filteredJobs: [JobEvent] {
         let calendar = Calendar.current
         let now = Date()
         
-        switch selectedTimeRange {
-        case .week:
-            // Get the start of the current week
-            var current = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now))!
-            // Move back to the start of the week by offset weeks
-            current = calendar.date(byAdding: .weekOfYear, value: -offsetPeriods, to: current)!
-            let end = calendar.date(byAdding: .day, value: 6, to: current)!
-            return (current, end)
-            
-        case .month:
-            // Get the start of the current month
-            var components = calendar.dateComponents([.year, .month], from: now)
-            // Move back by offset months
-            components.month = components.month! - offsetPeriods
-            let start = calendar.date(from: components)!
-            let end = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: start)!
-            return (start, end)
-            
-        case .year:
-            // Get the start of the current year
-            var components = calendar.dateComponents([.year], from: now)
-            // Move back by offset years
-            components.year = components.year! - offsetPeriods
-            let start = calendar.date(from: components)!
-            let end = calendar.date(byAdding: DateComponents(year: 1, day: -1), to: start)!
-            return (start, end)
-        }
-    }
-    
-    var dateRangeText: String {
-        let formatter = DateFormatter()
+        // Calculate the date range based on selected range and offset
+        let endDate: Date
+        let startDate: Date
         
         switch selectedTimeRange {
         case .week:
-            formatter.dateFormat = "MMM d"
-            return "\(formatter.string(from: dateRange.start)) - \(formatter.string(from: dateRange.end))"
+            endDate = calendar.date(byAdding: .weekOfYear, value: -offsetPeriods, to: now) ?? now
+            startDate = calendar.date(byAdding: .day, value: -6, to: endDate) ?? endDate
         case .month:
-            formatter.dateFormat = "MMMM yyyy"
-            return formatter.string(from: dateRange.start)
+            endDate = calendar.date(byAdding: .month, value: -offsetPeriods, to: now) ?? now
+            startDate = calendar.date(byAdding: .day, value: -30, to: endDate) ?? endDate
         case .year:
-            formatter.dateFormat = "yyyy"
-            return formatter.string(from: dateRange.start)
+            endDate = calendar.date(byAdding: .year, value: -offsetPeriods, to: now) ?? now
+            startDate = calendar.date(byAdding: .day, value: -364, to: endDate) ?? endDate
         }
-    }
-    
-    var filteredJobs: [Job] {
-        jobs.filter { job in
-            // A job should be included if any of its events fall within the date range
-            let dates = [
-                job.dateApplied,
-                job.hasInterview ? job.interviewDate : nil,
-                job.isDenied ? job.deniedDate : nil
-            ].compactMap { $0 }
-            
-            return dates.contains { date in
-                date >= dateRange.start && date <= dateRange.end
-            }
-        }
-        .sorted(by: {
-            let date1 = $0.isDenied ? ($0.deniedDate ?? $0.dateApplied) : $0.dateApplied
-            let date2 = $1.isDenied ? ($1.deniedDate ?? $1.dateApplied) : $1.dateApplied
-            return date1 > date2
-        })
-    }
-    
-    struct JobEvent: Identifiable {
-        let id = UUID()
-        let date: Date
-        let status: String
-        let job: Job
-    }
-    
-    var jobEvents: [JobEvent] {
+        
+        // Create events for applications, interviews, and denials
         var events: [JobEvent] = []
         
-        for job in filteredJobs {
-            // Always add the application date
-            events.append(JobEvent(date: job.dateApplied, status: "Applied", job: job))
-            
-            // Add interview date if it exists
-            if job.hasInterview, let interviewDate = job.interviewDate {
-                events.append(JobEvent(date: interviewDate, status: "Interviewed", job: job))
+        for job in jobs {
+            // Add application event
+            if job.dateApplied >= startDate && job.dateApplied <= endDate {
+                events.append(JobEvent(date: job.dateApplied, type: .applied))
             }
             
-            // Add denial date if it exists
-            if job.isDenied, let deniedDate = job.deniedDate {
-                events.append(JobEvent(date: deniedDate, status: "Denied", job: job))
+            // Add interview events
+            for interview in job.interviews {
+                if interview.date >= startDate && interview.date <= endDate {
+                    events.append(JobEvent(date: interview.date, type: .interviewed))
+                }
+            }
+            
+            // Add denial event
+            if let deniedDate = job.deniedDate, deniedDate >= startDate && deniedDate <= endDate {
+                events.append(JobEvent(date: deniedDate, type: .denied))
             }
         }
         
-        return events.filter { event in
-            event.date >= dateRange.start && event.date <= dateRange.end
-        }
+        return events.sorted(by: { $0.date < $1.date })
     }
     
     var periodStats: (applied: Int, interviewed: Int, denied: Int) {
         var stats = (applied: 0, interviewed: 0, denied: 0)
-        let events = jobEvents
         
-        for event in events {
-            switch event.status {
-            case "Applied": stats.applied += 1
-            case "Interviewed": stats.interviewed += 1
-            case "Denied": stats.denied += 1
-            default: break
+        for event in filteredJobs {
+            switch event.type {
+            case .applied:
+                stats.applied += 1
+            case .interviewed:
+                stats.interviewed += 1
+            case .denied:
+                stats.denied += 1
             }
         }
+        
         return stats
     }
     
-    var chartContent: some View {
-        Chart {
-            if jobEvents.isEmpty {
-                // Add an invisible mark to force the chart to show axes
-                RectangleMark(
-                    x: .value("Date", dateRange.start, unit: selectedTimeRange.unit),
-                    y: .value("Events", 1)
-                )
-                .opacity(0)
-            } else {
-                ForEach(jobEvents) { event in
-                    BarMark(
-                        x: .value("Date", event.date, unit: selectedTimeRange.unit),
-                        y: .value("Events", 1)
-                    )
-                    .position(by: .value("Status", event.status))
-                    .foregroundStyle(by: .value("Status", event.status))
-                }
-            }
+    var dateRange: String {
+        let calendar = Calendar.current
+        let now = Date()
+        let endDate: Date
+        let startDate: Date
+        
+        switch selectedTimeRange {
+        case .week:
+            endDate = calendar.date(byAdding: .weekOfYear, value: -offsetPeriods, to: now) ?? now
+            startDate = calendar.date(byAdding: .day, value: -6, to: endDate) ?? endDate
+        case .month:
+            endDate = calendar.date(byAdding: .month, value: -offsetPeriods, to: now) ?? now
+            startDate = calendar.date(byAdding: .day, value: -30, to: endDate) ?? endDate
+        case .year:
+            endDate = calendar.date(byAdding: .year, value: -offsetPeriods, to: now) ?? now
+            startDate = calendar.date(byAdding: .day, value: -364, to: endDate) ?? endDate
         }
-        .chartForegroundStyleScale([
-            "Applied": Color.blue,
-            "Interviewed": Color.green,
-            "Denied": Color.red
-        ])
-        .chartYAxis {
-            AxisMarks(position: .leading)
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = selectedTimeRange == .year ? "yyyy" : "MMM d, yyyy"
+        
+        if selectedTimeRange == .year {
+            return formatter.string(from: startDate)
         }
-        .frame(height: 200)
-        .chartXAxis {
-            AxisMarks(values: .stride(by: selectedTimeRange.unit)) { _ in
-                AxisGridLine()
-                AxisTick()
-                AxisValueLabel(format: selectedTimeRange == .year ?
-                    .dateTime.month() : .dateTime.month().day()
-                )
-            }
-        }
+        return "\(formatter.string(from: startDate)) - \(formatter.string(from: endDate))"
     }
     
     var body: some View {
         VStack(spacing: 16) {
-            // Header Section
-            Text("Job Search Dashboard")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .padding(.bottom, 4)
-            
-            // Stats Section
             HStack(spacing: 16) {
-                StatCardView(
-                    value: periodStats.applied,
-                    label: "Applications",
-                    systemImage: "doc.text",
-                    color: .blue
-                )
-                
-                StatCardView(
-                    value: periodStats.interviewed,
-                    label: "Interviews",
-                    systemImage: "person.2",
-                    color: .green
-                )
-                
-                StatCardView(
-                    value: periodStats.denied,
-                    label: "Denials",
-                    systemImage: "xmark.circle",
-                    color: .red
-                )
+                StatCardView(value: periodStats.applied, label: "Applications", systemImage: "paperplane", color: .blue)
+                StatCardView(value: periodStats.interviewed, label: "Interviews", systemImage: "calendar.badge.clock", color: .green)
+                StatCardView(value: periodStats.denied, label: "Denials", systemImage: "xmark.circle", color: .red)
             }
+            .padding(.horizontal)
             
-            if !jobs.isEmpty {
-                // Chart Section
-                VStack(alignment: .leading, spacing: 16) {
-                    // Time Range Picker
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Recent Activity")
+                        .font(.headline)
+                    
+                    Spacer()
+                    
                     Picker("", selection: $selectedTimeRange) {
                         ForEach(TimeRange.allCases, id: \.self) { range in
-                            Text(range.rawValue)
-                                .font(.headline)
-                                .tag(range)
+                            Text(range.rawValue).tag(range)
                         }
                     }
                     .pickerStyle(.segmented)
                     .onChange(of: selectedTimeRange) { _, _ in
                         offsetPeriods = 0
                     }
-                    
-                    // Chart
-                    chartContent
-                        .padding(.vertical, 8)
-                    
-                    // Time Navigation
-                    HStack {
-                        Spacer()
-                        
-                        Button(action: { offsetPeriods += 1 }) {
-                            Image(systemName: "chevron.left")
-                        }
-                        .buttonStyle(.plain)
-                        
-                        Text(dateRangeText)
-                            .font(.subheadline)
-                            .frame(minWidth: 120)
-                        
-                        Button(action: {
-                            offsetPeriods = max(0, offsetPeriods - 1)
-                        }) {
-                            Image(systemName: "chevron.right")
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(offsetPeriods == 0)
-                        
-                        Spacer()
+                }
+                .padding(.horizontal)
+                
+                Chart {
+                    ForEach(filteredJobs) { event in
+                        BarMark(
+                            x: .value("Date", event.date, unit: selectedTimeRange.unit),
+                            y: .value("Events", 1)
+                        )
+                        .foregroundStyle(by: .value("Status", event.type.rawValue))
                     }
+                    
+                    if filteredJobs.isEmpty {
+                        RectangleMark(
+                            x: .value("Date", Date()),
+                            y: .value("Events", 0)
+                        )
+                        .opacity(0)
+                    }
+                }
+                .chartForegroundStyleScale([
+                    "Applied": Color.blue,
+                    "Interviewed": Color.green,
+                    "Denied": Color.red
+                ])
+                .frame(height: 200)
+                .padding()
+                
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        offsetPeriods += 1
+                    }) {
+                        Image(systemName: "chevron.left")
+                    }
+                    .buttonStyle(.borderless)
+                    
+                    Text(dateRange)
+                        .font(.headline)
+                        .frame(minWidth: 150)
+                        .multilineTextAlignment(.center)
+                    
+                    Button(action: {
+                        offsetPeriods = max(0, offsetPeriods - 1)
+                    }) {
+                        Image(systemName: "chevron.right")
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(offsetPeriods == 0)
+                    Spacer()
                 }
             }
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .padding(.vertical)
+    }
+}
+
+struct JobEvent: Identifiable {
+    let id = UUID()
+    let date: Date
+    let type: EventType
+    
+    enum EventType: String {
+        case applied = "Applied"
+        case interviewed = "Interviewed"
+        case denied = "Denied"
     }
 }

@@ -66,7 +66,7 @@ struct ContentView: View {
         } detail: {
             ScrollView {
                 if selectedJob == nil {
-                    DashboardView(stats: applicationStats, jobs: jobs)
+                    DashboardView(jobs: jobs)
                 } else {
                     JobDetailsView(
                         job: selectedJob!,
@@ -84,7 +84,7 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(NSColor.windowBackgroundColor))
         }
-        .onChange(of: searchText) { _, newValue in
+        .onChange(of: searchText) { oldValue, newValue in
             if !newValue.isEmpty {
                 columnVisibility = .doubleColumn
             }

@@ -21,158 +21,126 @@ extension String {
 }
 
 class CSVHandler {
-    static func exportJobs(_ jobs: [Job]) -> String {
-        let headers = ["Date Applied", "Company", "Title", "URL", "Salary Min", "Salary Max", "Has Interview", "Interview Date", "Is Denied", "Denied Date", "Notes", "Work Type", "Last Modified", "ID"]
-        var rows = [headers.joined(separator: ",")]
+    static func exportJobs(_ jobs: [Job]) throws -> String {
+        var csv = "ID,Date Applied,Company Name,Job Title,URL,Salary Min,Salary Max,Is Denied,Denied Date,Notes,Work Type,Last Modified,Interviews\n"
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
         for job in jobs {
-            let row = [
-                dateFormatter.string(from: job.dateApplied),
+            // Sort interviews by date
+            let sortedInterviews = job.interviews.sorted(by: { $0.date < $1.date })
+            
+            // Format each interview as a string
+            let interviewStrings = sortedInterviews.map { interview in
+                let dateString = dateFormatter.string(from: interview.date)
+                let roundString = String(interview.round)
+                let escapedNotes = interview.notes.escapingCSV()
+                return "\(dateString)|\(roundString)|\(escapedNotes)"
+            }
+            
+            // Join all interview strings
+            let interviews = interviewStrings.joined(separator: ";")
+            
+            // Prepare individual fields
+            let dateApplied = dateFormatter.string(from: job.dateApplied)
+            let deniedDate = job.deniedDate.map { dateFormatter.string(from: $0) } ?? ""
+            let lastModifiedDate = dateFormatter.string(from: job.lastModified)
+            let salaryMinString = job.salaryMin.map { String($0) } ?? ""
+            let salaryMaxString = job.salaryMax.map { String($0) } ?? ""
+            let urlString = job.url?.absoluteString ?? ""
+            
+            // Create array of fields
+            let fields = [
+                job.id,
+                dateApplied,
                 job.companyName.escapingCSV(),
                 job.jobTitle.escapingCSV(),
-                job.url?.absoluteString ?? "",
-                job.salaryMin?.description ?? "",
-                job.salaryMax?.description ?? "",
-                job.hasInterview.description,
-                job.interviewDate.map { dateFormatter.string(from: $0) } ?? "",
-                job.isDenied.description,
-                job.deniedDate.map { dateFormatter.string(from: $0) } ?? "",
+                urlString,
+                salaryMinString,
+                salaryMaxString,
+                String(job.isDenied),
+                deniedDate,
                 job.notes.escapingCSV(),
                 job.workplaceType.rawValue,
-                dateFormatter.string(from: job.lastModified),
-                job.id
+                lastModifiedDate,
+                interviews.escapingCSV()
             ]
-            rows.append(row.joined(separator: ","))
+            
+            // Join fields into a row
+            let row = fields.joined(separator: ",")
+            
+            csv += row + "\n"
         }
         
-        return rows.joined(separator: "\n")
+        return csv
     }
     
-    static func importJobs(from csv: String) -> [Job] {
-        var jobs: [Job] = []
+    static func importJobs(_ csv: String, modelContext: ModelContext) throws {
         let rows = csv.components(separatedBy: .newlines)
-        
-        // Skip header row
-        if rows.count > 1 {
-            for row in rows.dropFirst() where !row.isEmpty {
-                if let job = createJobFromCSV(row) {
-                    jobs.append(job)
-                }
-            }
-        }
-        
-        return jobs
-    }
-    
-    private static func createJobFromCSV(_ row: String) -> Job? {
-        var columns: [String] = []
-        var currentColumn = ""
-        var insideQuotes = false
-        
-        for char in row {
-            if char == "\"" {
-                insideQuotes.toggle()
-            } else if char == "," && !insideQuotes {
-                columns.append(currentColumn)
-                currentColumn = ""
-            } else {
-                currentColumn.append(char)
-            }
-        }
-        columns.append(currentColumn)
-        
-        // Pad array with empty strings if we don't have enough columns
-        while columns.count < 9 {
-            columns.append("")
-        }
-        
-        let job = Job(
-            dateApplied: parseDate(columns[7]) ?? Date(),
-            companyName: columns[1].trimmingCharacters(in: .whitespaces),
-            jobTitle: columns[2].trimmingCharacters(in: .whitespaces),
-            hasInterview: columns[4].lowercased() == "true",
-            isDenied: columns[5].lowercased() == "true",
-            notes: columns[3].trimmingCharacters(in: .whitespaces),
-            workplaceType: WorkplaceType(rawValue: columns[6]) ?? .remote
-        )
-        
-        // If ID exists in CSV, use it, otherwise Job init will create a new one
-        if !columns[0].isEmpty {
-            job.id = columns[0]
-        }
-        
-        job.lastModified = Date()
-        return job
-    }
-    
-    static func createJobFromCSV(_ row: [String], context: ModelContext) -> Job? {
-        guard row.count >= 14 else { return nil }
+        guard rows.count > 1 else { throw CSVError.emptyFile }
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
-        let job = Job()
-        
-        if let date = dateFormatter.date(from: row[0]) {
-            job.dateApplied = date
+        // Skip header row
+        for row in rows.dropFirst() where !row.isEmpty {
+            let columns = row.components(separatedBy: ",")
+            guard columns.count >= 12 else { continue }
+            
+            let id = columns[0]
+            let dateApplied = dateFormatter.date(from: columns[1]) ?? Date()
+            let companyName = columns[2].unescapingCSV()
+            let jobTitle = columns[3].unescapingCSV()
+            let url = URL(string: columns[4])
+            let salaryMin = Double(columns[5])
+            let salaryMax = Double(columns[6])
+            let isDenied = columns[7].lowercased() == "true"
+            let deniedDate = columns[8].isEmpty ? nil : dateFormatter.date(from: columns[8])
+            let notes = columns[9].unescapingCSV()
+            let workplaceType = WorkplaceType(rawValue: columns[10]) ?? .remote
+            let lastModified = dateFormatter.date(from: columns[11]) ?? Date()
+            
+            let job = Job(
+                dateApplied: dateApplied,
+                companyName: companyName,
+                jobTitle: jobTitle,
+                url: url,
+                salaryMin: salaryMin,
+                salaryMax: salaryMax,
+                isDenied: isDenied,
+                deniedDate: deniedDate,
+                notes: notes,
+                workplaceType: workplaceType
+            )
+            job.id = id
+            job.lastModified = lastModified
+            
+            // Parse interviews if they exist
+            if columns.count > 12 {
+                let interviewsData = columns[12].unescapingCSV()
+                let interviews = interviewsData.components(separatedBy: ";")
+                
+                for interviewData in interviews where !interviewData.isEmpty {
+                    let parts = interviewData.components(separatedBy: "|")
+                    if parts.count >= 3,
+                       let date = dateFormatter.date(from: parts[0]),
+                       let round = Int(parts[1]) {
+                        let notes = parts[2].unescapingCSV()
+                        let interview = Interview(date: date, notes: notes, round: round)
+                        job.interviews.append(interview)
+                    }
+                }
+            }
+            
+            modelContext.insert(job)
         }
         
-        job.companyName = row[1].unescapingCSV()
-        job.jobTitle = row[2].unescapingCSV()
-        if !row[3].isEmpty {
-            job.url = URL(string: row[3])
-        }
-        if !row[4].isEmpty {
-            job.salaryMin = Double(row[4])
-        }
-        if !row[5].isEmpty {
-            job.salaryMax = Double(row[5])
-        }
-        job.hasInterview = row[6].lowercased() == "true"
-        if !row[7].isEmpty {
-            job.interviewDate = dateFormatter.date(from: row[7])
-        }
-        job.isDenied = row[8].lowercased() == "true"
-        if !row[9].isEmpty {
-            job.deniedDate = dateFormatter.date(from: row[9])
-        }
-        job.notes = row[10].unescapingCSV()
-        job.workplaceType = WorkplaceType(rawValue: row[11]) ?? .remote
-        if let date = dateFormatter.date(from: row[12]) {
-            job.lastModified = date
-        } else {
-            job.lastModified = Date()
-        }
-        if !row[13].isEmpty {
-            job.id = row[13]
-        }
-        
-        return job
+        try modelContext.save()
     }
-    
-    private static func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
-    }
-    
-    private static func parseDate(_ dateString: String) -> Date? {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        
-        // If parsing fails, try ISO8601 as fallback
-        if let date = formatter.date(from: dateString) {
-            return Calendar.current.startOfDay(for: date)
-        }
-        
-        let iso8601Formatter = ISO8601DateFormatter()
-        if let date = iso8601Formatter.date(from: dateString) {
-            return Calendar.current.startOfDay(for: date)
-        }
-        
-        return nil
-    }
+}
+
+enum CSVError: Error {
+    case emptyFile
+    case invalidFormat
 }
