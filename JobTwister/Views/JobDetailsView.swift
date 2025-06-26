@@ -83,11 +83,19 @@ struct JobDetailsView: View {
                         DetailRow(title: "Interview Date", value: date.formatted(date: .long, time: .shortened))
                     }
                     
-                    Toggle("Application Denied", isOn: $job.isDenied)
-                        .toggleStyle(.switch)
-                        .onChange(of: job.isDenied) { oldValue, newValue in
+                    Toggle("Application Denied", isOn: Binding(
+                        get: { job.isDenied },
+                        set: { newValue in
+                            job.isDenied = newValue
+                            job.deniedDate = newValue ? Date() : nil
                             job.lastModified = Date()
                         }
+                    ))
+                    .toggleStyle(.switch)
+                    
+                    if job.isDenied, let date = job.deniedDate {
+                        DetailRow(title: "Denied Date", value: date.formatted(date: .long, time: .omitted))
+                    }
                 }
                 
                 if !job.notes.isEmpty {

@@ -80,56 +80,77 @@ struct DashboardView: View {
     
     var filteredJobs: [Job] {
         jobs.filter { job in
-            job.dateApplied >= dateRange.start && job.dateApplied <= dateRange.end
+            // A job should be included if any of its events fall within the date range
+            let dates = [
+                job.dateApplied,
+                job.hasInterview ? job.interviewDate : nil,
+                job.isDenied ? job.deniedDate : nil
+            ].compactMap { $0 }
+            
+            return dates.contains { date in
+                date >= dateRange.start && date <= dateRange.end
+            }
         }
-        .sorted(by: { $0.dateApplied > $1.dateApplied })
+        .sorted(by: {
+            let date1 = $0.isDenied ? ($0.deniedDate ?? $0.dateApplied) : $0.dateApplied
+            let date2 = $1.isDenied ? ($1.deniedDate ?? $1.dateApplied) : $1.dateApplied
+            return date1 > date2
+        })
     }
     
-    var cumulativeJobs: [(date: Date, count: Int, status: String)] {
-        var runningCount = 0
-        return filteredJobs
-            .sorted(by: { $0.dateApplied < $1.dateApplied })
-            .map { job in
-                runningCount += 1
-                return (
-                    date: job.dateApplied,
-                    count: runningCount,
-                    status: job.isDenied ? "Denied" :
-                        (job.hasInterview ? "Interviewed" : "Applied")
-                )
+    struct JobEvent: Identifiable {
+        let id = UUID()
+        let date: Date
+        let status: String
+        let job: Job
+    }
+    
+    var jobEvents: [JobEvent] {
+        var events: [JobEvent] = []
+        
+        for job in filteredJobs {
+            // Always add the application date
+            events.append(JobEvent(date: job.dateApplied, status: "Applied", job: job))
+            
+            // Add interview date if it exists
+            if job.hasInterview, let interviewDate = job.interviewDate {
+                events.append(JobEvent(date: interviewDate, status: "Interviewed", job: job))
             }
+            
+            // Add denial date if it exists
+            if job.isDenied, let deniedDate = job.deniedDate {
+                events.append(JobEvent(date: deniedDate, status: "Denied", job: job))
+            }
+        }
+        
+        return events.filter { event in
+            event.date >= dateRange.start && event.date <= dateRange.end
+        }
     }
     
     var periodStats: (applied: Int, interviewed: Int, denied: Int) {
         var stats = (applied: 0, interviewed: 0, denied: 0)
-        for job in filteredJobs {
-            if job.isDenied {
-                stats.denied += 1
-            } else if job.hasInterview {
-                stats.interviewed += 1
-            } else {
-                stats.applied += 1
+        let events = jobEvents
+        
+        for event in events {
+            switch event.status {
+            case "Applied": stats.applied += 1
+            case "Interviewed": stats.interviewed += 1
+            case "Denied": stats.denied += 1
+            default: break
             }
         }
         return stats
     }
     
     var chartContent: some View {
-        Chart {
-            ForEach(filteredJobs) { job in
-                BarMark(
-                    x: .value("Date", job.dateApplied, unit: selectedTimeRange.unit),
-                    y: .value("Applications", 1)
-                )
-                .position(by: .value("Status",
-                    job.isDenied ? "Denied" :
-                    (job.hasInterview ? "Interviewed" : "Applied")
-                ))
-                .foregroundStyle(by: .value("Status",
-                    job.isDenied ? "Denied" :
-                    (job.hasInterview ? "Interviewed" : "Applied")
-                ))
-            }
+        Chart(jobEvents) { event in
+            BarMark(
+                x: .value("Date", event.date, unit: selectedTimeRange.unit),
+                y: .value("Events", 1)
+            )
+            .position(by: .value("Status", event.status))
+            .foregroundStyle(by: .value("Status", event.status))
         }
         .chartForegroundStyleScale([
             "Applied": Color.blue,

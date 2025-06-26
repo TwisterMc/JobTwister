@@ -15,6 +15,7 @@ struct JobFormView: View {
     @State private var hasInterview: Bool
     @State private var interviewDate: Date
     @State private var isDenied: Bool
+    @State private var deniedDate: Date?
     @State private var notes: String
     @State private var workplaceType: WorkplaceType
     
@@ -29,6 +30,7 @@ struct JobFormView: View {
         _hasInterview = State(initialValue: job?.hasInterview ?? false)
         _interviewDate = State(initialValue: job?.interviewDate ?? Date())
         _isDenied = State(initialValue: job?.isDenied ?? false)
+        _deniedDate = State(initialValue: job?.deniedDate)
         _notes = State(initialValue: job?.notes ?? "")
         _workplaceType = State(initialValue: job?.workplaceType ?? .remote)
     }
@@ -66,6 +68,13 @@ struct JobFormView: View {
                 
                 Toggle("Application Denied", isOn: $isDenied)
                     .toggleStyle(.switch)
+                
+                if isDenied {
+                    DatePicker("Denied Date", selection: Binding(
+                        get: { deniedDate ?? Date() },
+                        set: { deniedDate = $0 }
+                    ), displayedComponents: [.date])
+                }
             }
             
             Section("Notes") {
@@ -107,6 +116,7 @@ struct JobFormView: View {
             existingJob.hasInterview = hasInterview
             existingJob.interviewDate = hasInterview ? interviewDate : nil
             existingJob.isDenied = isDenied
+            existingJob.deniedDate = isDenied ? deniedDate : nil
             existingJob.notes = notes
             existingJob.workplaceType = workplaceType
             existingJob.lastModified = Date()
@@ -122,6 +132,7 @@ struct JobFormView: View {
                 hasInterview: hasInterview,
                 interviewDate: hasInterview ? interviewDate : nil,
                 isDenied: isDenied,
+                deniedDate: isDenied ? deniedDate : nil,
                 notes: notes,
                 workplaceType: workplaceType
             )

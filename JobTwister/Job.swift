@@ -27,6 +27,7 @@ final class Job {
     var hasInterview: Bool
     var interviewDate: Date?
     var isDenied: Bool
+    var deniedDate: Date?
     var notes: String
     var workplaceType: WorkplaceType
     
@@ -39,6 +40,7 @@ final class Job {
          hasInterview: Bool = false,
          interviewDate: Date? = nil,
          isDenied: Bool = false,
+         deniedDate: Date? = nil,
          notes: String = "",
          workplaceType: WorkplaceType = .remote) {
         self.id = UUID().uuidString
@@ -52,6 +54,7 @@ final class Job {
         self.hasInterview = hasInterview
         self.interviewDate = interviewDate
         self.isDenied = isDenied
+        self.deniedDate = deniedDate
         self.notes = notes
         self.workplaceType = workplaceType
     }

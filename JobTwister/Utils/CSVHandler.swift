@@ -3,14 +3,52 @@ import SwiftUI
 import SwiftData
 import UniformTypeIdentifiers
 
+extension String {
+    func escapingCSV() -> String {
+        if self.contains(",") || self.contains("\"") || self.contains("\n") {
+            return "\"\(self.replacingOccurrences(of: "\"", with: "\"\""))\""
+        }
+        return self
+    }
+    
+    func unescapingCSV() -> String {
+        if self.hasPrefix("\"") && self.hasSuffix("\"") {
+            let withoutQuotes = String(self.dropFirst().dropLast())
+            return withoutQuotes.replacingOccurrences(of: "\"\"", with: "\"")
+        }
+        return self
+    }
+}
 
 class CSVHandler {
     static func exportJobs(_ jobs: [Job]) -> String {
-        let header = "ID,Company Name,Job Title,Notes,Has Interview,Is Denied,Work Type,Date Applied,Last Modified\n"
-        let rows = jobs.map { job in
-            "\(job.id),\(job.companyName),\(job.jobTitle),\"\(job.notes.replacingOccurrences(of: "\"", with: "\"\""))\",\(job.hasInterview),\(job.isDenied),\(job.workplaceType.rawValue),\(formatDate(job.dateApplied)),\(formatDate(job.lastModified))"
-        }.joined(separator: "\n")
-        return header + rows
+        let headers = ["Date Applied", "Company", "Title", "URL", "Salary Min", "Salary Max", "Has Interview", "Interview Date", "Is Denied", "Denied Date", "Notes", "Work Type", "Last Modified", "ID"]
+        var rows = [headers.joined(separator: ",")]
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        for job in jobs {
+            let row = [
+                dateFormatter.string(from: job.dateApplied),
+                job.companyName.escapingCSV(),
+                job.jobTitle.escapingCSV(),
+                job.url?.absoluteString ?? "",
+                job.salaryMin?.description ?? "",
+                job.salaryMax?.description ?? "",
+                job.hasInterview.description,
+                job.interviewDate.map { dateFormatter.string(from: $0) } ?? "",
+                job.isDenied.description,
+                job.deniedDate.map { dateFormatter.string(from: $0) } ?? "",
+                job.notes.escapingCSV(),
+                job.workplaceType.rawValue,
+                dateFormatter.string(from: job.lastModified),
+                job.id
+            ]
+            rows.append(row.joined(separator: ","))
+        }
+        
+        return rows.joined(separator: "\n")
     }
     
     static func importJobs(from csv: String) -> [Job] {
@@ -67,6 +105,51 @@ class CSVHandler {
         }
         
         job.lastModified = Date()
+        return job
+    }
+    
+    static func createJobFromCSV(_ row: [String], context: ModelContext) -> Job? {
+        guard row.count >= 14 else { return nil }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let job = Job()
+        
+        if let date = dateFormatter.date(from: row[0]) {
+            job.dateApplied = date
+        }
+        
+        job.companyName = row[1].unescapingCSV()
+        job.jobTitle = row[2].unescapingCSV()
+        if !row[3].isEmpty {
+            job.url = URL(string: row[3])
+        }
+        if !row[4].isEmpty {
+            job.salaryMin = Double(row[4])
+        }
+        if !row[5].isEmpty {
+            job.salaryMax = Double(row[5])
+        }
+        job.hasInterview = row[6].lowercased() == "true"
+        if !row[7].isEmpty {
+            job.interviewDate = dateFormatter.date(from: row[7])
+        }
+        job.isDenied = row[8].lowercased() == "true"
+        if !row[9].isEmpty {
+            job.deniedDate = dateFormatter.date(from: row[9])
+        }
+        job.notes = row[10].unescapingCSV()
+        job.workplaceType = WorkplaceType(rawValue: row[11]) ?? .remote
+        if let date = dateFormatter.date(from: row[12]) {
+            job.lastModified = date
+        } else {
+            job.lastModified = Date()
+        }
+        if !row[13].isEmpty {
+            job.id = row[13]
+        }
+        
         return job
     }
     
