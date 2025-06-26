@@ -94,7 +94,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingAddJob) {
             NavigationStack {
-                JobFormView(job: showingAddJob && selectedJob != nil ? selectedJob : nil)
+                JobFormView(job: selectedJob)
                     .navigationTitle(selectedJob == nil ? "New Job Application" : "Edit Job")
                     .frame(minWidth: 500, minHeight: 650)
             }
