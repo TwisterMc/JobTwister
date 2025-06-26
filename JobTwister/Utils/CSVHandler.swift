@@ -48,7 +48,7 @@ class CSVHandler {
         
         guard columns.count >= 8 else { return nil }
         
-        return Job(
+        let job = Job(
             dateApplied: parseDate(columns[6]) ?? Date(),
             companyName: columns[0].trimmingCharacters(in: .whitespaces),
             jobTitle: columns[1].trimmingCharacters(in: .whitespaces),
@@ -57,15 +57,30 @@ class CSVHandler {
             notes: columns[2].trimmingCharacters(in: .whitespaces),
             workplaceType: WorkplaceType(rawValue: columns[5]) ?? .remote
         )
+        job.lastModified = Date()  // Set lastModified to current date when importing
+        return job
     }
     
     private static func formatDate(_ date: Date) -> String {
-        let formatter = ISO8601DateFormatter()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: date)
     }
     
     private static func parseDate(_ dateString: String) -> Date? {
-        let formatter = ISO8601DateFormatter()
-        return formatter.date(from: dateString)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        
+        // If parsing fails, try ISO8601 as fallback
+        if let date = formatter.date(from: dateString) {
+            return Calendar.current.startOfDay(for: date)
+        }
+        
+        let iso8601Formatter = ISO8601DateFormatter()
+        if let date = iso8601Formatter.date(from: dateString) {
+            return Calendar.current.startOfDay(for: date)
+        }
+        
+        return nil
     }
 }
