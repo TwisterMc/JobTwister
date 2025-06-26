@@ -55,9 +55,9 @@ struct JobFormView: View {
                 }
                 HStack {
                     Image(systemName: "dollarsign.circle").foregroundColor(.secondary)
-                    TextField("Minimum Salary", value: $salaryMin, format: .currency(code: "USD"))
+                    TextField("Salary", value: $salaryMin, format: .currency(code: "USD"))
                     Text("-")
-                    TextField("Maximum Salary", value: $salaryMax, format: .currency(code: "USD"))
+                    TextField("", value: $salaryMax, format: .currency(code: "USD"))
                 }
                 Picker(selection: $workplaceType, label: Label("Work Type", systemImage: "building.2")) {
                     ForEach([WorkplaceType.remote, .hybrid, .inOffice], id: \.self) { type in
@@ -77,7 +77,7 @@ struct JobFormView: View {
                 }
                 .toggleStyle(.switch)
                 if hasInterview {
-                    DatePicker("Interview Date",selection: $interviewDate) 
+                    DatePicker("Interview Date",selection: $interviewDate)
                     .padding(.leading, 40)
                 }
                 Toggle(isOn: $isDenied) {
