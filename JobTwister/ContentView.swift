@@ -4,9 +4,12 @@ import Charts
 
 struct ContentView: View {
     enum SortOption: String, CaseIterable {
+        case alphabetical = "Alphabetical - Company "
+        case alphabeticalJT = "Alphabetical - Title"
         case dateAdded = "Date Added"
         case dateModified = "Last Modified"
-        case alphabetical = "Alphabetical"
+        case workType = "Work Type"
+        case interview = "Has Interview"
     }
     
     @Environment(\.modelContext) private var modelContext
@@ -26,6 +29,12 @@ struct ContentView: View {
             return jobs.sorted { $0.lastModified > $1.lastModified }
         case .alphabetical:
             return jobs.sorted { $0.companyName.localizedCaseInsensitiveCompare($1.companyName) == .orderedAscending }
+        case .alphabeticalJT:
+            return jobs.sorted { $0.jobTitle.localizedCaseInsensitiveCompare($1.jobTitle) == .orderedAscending }
+        case .workType:
+            return jobs.sorted { $0.workplaceType.rawValue.localizedCaseInsensitiveCompare($1.workplaceType.rawValue) == .orderedAscending }
+        case .interview:
+            return jobs.sorted { $0.hasInterview && !$1.hasInterview }
         }
     }
     
