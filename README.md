@@ -14,19 +14,28 @@ JobTwister is an experimental project exploring modern Apple technologies:
 - **Charts** for data visualization
 
 The app helps users track their job search by managing:
-- Job applications with details like company, role, and salary
-- Application status (pending, interview scheduled, denied)
+- Job applications with details like company, role, salary range, and URLs
+- Application status tracking (pending, interview scheduled, denied)
 - Work type preferences (remote, hybrid, in-office)
+- Interview scheduling and tracking
+- Detailed notes for each application
+- CSV import/export for data portability
 - Interactive dashboard with application statistics
+- Real-time search across all job details
+- Multiple sort options (date added, last modified, alphabetical)
 
 ## Technical Details
 
 This project experiments with:
 - NavigationSplitView for a modern three-column macOS layout
-- SwiftData for local data persistence
+- SwiftData for local data persistence and schema migrations
 - Responsive layouts that adapt to window size
-- Real-time filtering and sorting
-- Dynamic charts and statistics
+- Real-time search and filtering capabilities
+- Dynamic sorting with multiple criteria
+- CSV data import/export functionality
+- Native macOS UI patterns and keyboard shortcuts
+- Dynamic charts and statistics dashboard
+- Form validation and data integrity checks
 
 ## Status
 
