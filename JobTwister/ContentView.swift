@@ -62,7 +62,7 @@ struct ContentView: View {
                 },
                 currentSortOption: sortOption
             )
-            .navigationSplitViewColumnWidth(min: 300, ideal: 300)
+            .navigationSplitViewColumnWidth(min: 200, ideal: 300)
         } detail: {
             ScrollView {
                 if selectedJob == nil {
@@ -86,6 +86,7 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(NSColor.windowBackgroundColor))
             .scrollIndicators(.automatic)
+            .frame(minWidth: 500, minHeight: 150)
         }
         .onChange(of: searchText) { _, newValue in
             if !newValue.isEmpty {
