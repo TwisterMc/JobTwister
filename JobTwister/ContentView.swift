@@ -3,6 +3,9 @@ import SwiftData
 import Charts
 
 struct ContentView: View {
+    @Binding var selectedJob: Job?
+    @Binding var showingAddJob: Bool
+    
     enum SortOption: String, CaseIterable {
         case alphabetical = "Alphabetical - Company "
         case alphabeticalJT = "Alphabetical - Title"
@@ -14,10 +17,8 @@ struct ContentView: View {
     
     @Environment(\.modelContext) private var modelContext
     @State private var sortOption: SortOption = .dateAdded
-    @State private var isSidebarVisible = true
+    @State private var isSidebarVisible = true // This state seems unused, consider removing if not needed.
     @Query private var jobs: [Job]
-    @State private var selectedJob: Job?
-    @State private var showingAddJob = false
     @State private var searchText = ""
     @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
     
@@ -147,9 +148,13 @@ struct ContentView: View {
 }
 
 #Preview {
+    // @Previewable @State variables must be at the very beginning
+    @Previewable @State var previewSelectedJob: Job? = nil
+    @Previewable @State var previewShowingAddJob: Bool = false
+
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: Job.self, configurations: config)
     
-    return ContentView()
+    return ContentView(selectedJob: $previewSelectedJob, showingAddJob: $previewShowingAddJob)
         .modelContainer(container)
 }
