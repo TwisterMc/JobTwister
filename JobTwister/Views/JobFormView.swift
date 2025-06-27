@@ -42,19 +42,19 @@ struct JobFormView: View {
                     Label("Date Applied", systemImage: "calendar")
                 }
                 HStack {
-                    Image(systemName: "building.2").foregroundColor(.secondary)
+                    Image(systemName: "building.2")
                     TextField("Company Name", text: $companyName)
                 }
                 HStack {
-                    Image(systemName: "briefcase").foregroundColor(.secondary)
+                    Image(systemName: "briefcase")
                     TextField("Job Title", text: $jobTitle)
                 }
                 HStack {
-                    Image(systemName: "link").foregroundColor(.secondary)
+                    Image(systemName: "link")
                     TextField("Job URL", text: $urlString)
                 }
                 HStack {
-                    Image(systemName: "dollarsign.circle").foregroundColor(.secondary)
+                    Image(systemName: "dollarsign.circle")
                     TextField("Salary", value: $salaryMin, format: .currency(code: "USD"))
                     Text("-")
                     TextField("", value: $salaryMax, format: .currency(code: "USD"))
