@@ -68,4 +68,3 @@ integration_logs/
 
 # Local environment
 .env
-.gitignore
