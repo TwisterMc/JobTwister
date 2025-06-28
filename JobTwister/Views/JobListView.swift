@@ -33,6 +33,7 @@ struct JobListView: View {
             }
         }
         .listStyle(.plain)
+        .id(currentSortOption)
         .navigationTitle("Job Applications")
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
