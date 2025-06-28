@@ -33,7 +33,6 @@ struct JobListView: View {
             }
         }
         .listStyle(.plain)
-        .id(UUID())
         .navigationTitle("Job Applications")
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
