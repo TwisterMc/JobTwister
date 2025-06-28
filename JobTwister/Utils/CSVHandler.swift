@@ -20,6 +20,13 @@ extension String {
     }
 }
 
+extension String.Iterator {
+    mutating func peek() -> Character? {
+        var copy = self
+        return copy.next()
+    }
+}
+
 class CSVHandler {
     static func exportJobs(_ jobs: [Job]) -> String {
         let headers = ["Date Applied", "Company", "Title", "URL", "Salary Min", "Salary Max", "Has Interview", "Interview Date", "Is Denied", "Denied Date", "Notes", "Work Type", "Last Modified", "ID"]
@@ -53,11 +60,11 @@ class CSVHandler {
     
     static func importJobs(from csv: String) -> [Job] {
         var jobs: [Job] = []
-        let rows = csv.components(separatedBy: .newlines)
+        let rows = csv.components(separatedBy: .newlines).filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         
         // Skip header row
         if rows.count > 1 {
-            for row in rows.dropFirst() where !row.isEmpty {
+            for row in rows.dropFirst() {
                 if let job = createJobFromCSV(row) {
                     jobs.append(job)
                 }
@@ -71,10 +78,20 @@ class CSVHandler {
         var columns: [String] = []
         var currentColumn = ""
         var insideQuotes = false
+        var iterator = row.makeIterator()
         
-        for char in row {
+        while let char = iterator.next() {
             if char == "\"" {
-                insideQuotes.toggle()
+                if insideQuotes {
+                    if let nextChar = iterator.peek(), nextChar == "\"" {
+                        _ = iterator.next() // consume second quote
+                        currentColumn.append("\"")
+                    } else {
+                        insideQuotes = false
+                    }
+                } else {
+                    insideQuotes = true
+                }
             } else if char == "," && !insideQuotes {
                 columns.append(currentColumn)
                 currentColumn = ""
@@ -84,31 +101,10 @@ class CSVHandler {
         }
         columns.append(currentColumn)
         
-        // Pad array with empty strings if we don't have enough columns
-        while columns.count < 9 {
-            columns.append("")
-        }
-        
-        let job = Job(
-            dateApplied: parseDate(columns[7]) ?? Date(),
-            companyName: columns[1].trimmingCharacters(in: .whitespaces),
-            jobTitle: columns[2].trimmingCharacters(in: .whitespaces),
-            hasInterview: columns[4].lowercased() == "true",
-            isDenied: columns[5].lowercased() == "true",
-            notes: columns[3].trimmingCharacters(in: .whitespaces),
-            workplaceType: WorkplaceType(rawValue: columns[6]) ?? .remote
-        )
-        
-        // If ID exists in CSV, use it, otherwise Job init will create a new one
-        if !columns[0].isEmpty {
-            job.id = columns[0]
-        }
-        
-        job.lastModified = Date()
-        return job
+        return createJobFromCSV(columns)
     }
     
-    static func createJobFromCSV(_ row: [String], context: ModelContext) -> Job? {
+    static func createJobFromCSV(_ row: [String]) -> Job? {
         guard row.count >= 14 else { return nil }
         
         let dateFormatter = DateFormatter()
@@ -163,7 +159,6 @@ class CSVHandler {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         
-        // If parsing fails, try ISO8601 as fallback
         if let date = formatter.date(from: dateString) {
             return Calendar.current.startOfDay(for: date)
         }
