@@ -43,21 +43,21 @@ struct JobFormView: View {
                 }
                 HStack {
                     Image(systemName: "building.2")
-                    TextField("Company Name", text: $companyName)
+                    TextField("Company Name", text: $companyName).focusAwareStyle()
                 }
                 HStack {
                     Image(systemName: "briefcase")
-                    TextField("Job Title", text: $jobTitle)
+                    TextField("Job Title", text: $jobTitle).focusAwareStyle()
                 }
                 HStack {
                     Image(systemName: "link")
-                    TextField("Job URL", text: $urlString)
+                    TextField("Job URL", text: $urlString).focusAwareStyle()
                 }
                 HStack {
                     Image(systemName: "dollarsign.circle")
-                    TextField("Salary", value: $salaryMin, format: .currency(code: "USD"))
+                    TextField("Min Salary", value: $salaryMin, format: .currency(code: "USD")).focusAwareStyle()
                     Text("-")
-                    TextField("", value: $salaryMax, format: .currency(code: "USD"))
+                    TextField("Max Salary", value: $salaryMax, format: .currency(code: "USD")).focusAwareStyle()
                 }
                 Picker(selection: $workplaceType, label: Label("Work Type", systemImage: "building.2")) {
                     ForEach([WorkplaceType.remote, .hybrid, .inOffice], id: \.self) { type in
@@ -99,6 +99,7 @@ struct JobFormView: View {
                                 .padding(5)
                                 .frame(height: 150)
                                 .cornerRadius(8)
+                                .focusAwareStyle()
                         }
         }
         .formStyle(.grouped)
