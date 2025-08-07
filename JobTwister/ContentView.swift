@@ -88,7 +88,8 @@ struct ContentView: View {
                                 try? modelContext.save()
                                 self.selectedJob = nil
                             }
-                        }
+                        },
+                        onSave: { try? modelContext.save() },
                     )
                     .frame(maxWidth: 800)  // Limit maximum width for better readability
                 }
