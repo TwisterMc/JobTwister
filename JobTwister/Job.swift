@@ -24,12 +24,15 @@ final class Job {
     var url: URL?
     var salaryMin: Double?
     var salaryMax: Double?
-    var hasInterview: Bool = false
-    var interviewDate: Date?
     var isDenied: Bool = false
     var deniedDate: Date?
     var notes: String
     var workplaceType: WorkplaceType
+    // Legacy properties
+    var hasInterview: Bool = false
+    var interviewDate: Date?
+    // New interview relationship
+    @Relationship(deleteRule: .cascade) var interviews: [Interview] = []
     
     init(dateApplied: Date = Date(),
          companyName: String = "",
@@ -43,6 +46,7 @@ final class Job {
          deniedDate: Date? = nil,
          notes: String = "",
          workplaceType: WorkplaceType = .remote) {
+         
         self.id = UUID().uuidString
         self.dateApplied = dateApplied
         self.lastModified = Date()
@@ -57,5 +61,11 @@ final class Job {
         self.deniedDate = deniedDate
         self.notes = notes
         self.workplaceType = workplaceType
+        
+        // Migrate legacy interview data if present
+        if hasInterview, let date = interviewDate {
+            let interview = Interview(date: date)
+            self.interviews = [interview]
+        }
     }
 }

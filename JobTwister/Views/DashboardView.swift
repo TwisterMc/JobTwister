@@ -81,11 +81,16 @@ struct DashboardView: View {
     var filteredJobs: [Job] {
         jobs.filter { job in
             // A job should be included if any of its events fall within the date range
-            let dates = [
-                job.dateApplied,
-                job.hasInterview ? job.interviewDate : nil,
-                job.isDenied ? job.deniedDate : nil
-            ].compactMap { $0 }
+            // Collect all relevant dates
+            var dates = [job.dateApplied]
+            
+            // Add all interview dates
+            dates.append(contentsOf: job.interviews.map { $0.date })
+            
+            // Add denial date if it exists
+            if job.isDenied, let deniedDate = job.deniedDate {
+                dates.append(deniedDate)
+            }
             
             return dates.contains { date in
                 date >= dateRange.start && date <= dateRange.end
@@ -113,8 +118,8 @@ struct DashboardView: View {
             events.append(JobEvent(date: job.dateApplied, status: "Applied", job: job))
             
             // Add interview date if it exists
-            if job.hasInterview, let interviewDate = job.interviewDate {
-                events.append(JobEvent(date: interviewDate, status: "Interviewed", job: job))
+            for interview in job.interviews {
+                events.append(JobEvent(date: interview.date, status: "Interview", job: job))
             }
             
             // Add denial date if it exists

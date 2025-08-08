@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct JobDetailsView: View {
     @Bindable var job: Job
@@ -82,10 +83,10 @@ struct JobDetailsView: View {
                         //                        }
                         //                        .buttonStyle(.bordered)
                         
-//                        Button(action: onEdit) {
-//                            Label("Edit", systemImage: "pencil")
-//                        }
-//                        .buttonStyle(.bordered)
+                        Button(action: onEdit) {
+                            Label("Edit", systemImage: "pencil")
+                        }
+                        .buttonStyle(.bordered)
                         
                         Button(role: .destructive, action: onDelete) {
                             Label("Delete", systemImage: "trash")
@@ -140,23 +141,25 @@ struct JobDetailsView: View {
         
                     }
                     
-                    Section("Status") {
-                        Toggle(isOn: $job.hasInterview) {
-                            Label("Has Interview", systemImage: "calendar.badge.clock")
-                        }
-                        .toggleStyle(.switch)
-                        .onChange(of: job.hasInterview) { oldValue, newValue in
-                            if newValue && job.interviewDate == nil {
-                                job.interviewDate = Date()
+                    Section("Interviews") {
+                        ForEach($job.interviews, id: \.wrappedValue.id) { interview in
+                            InterviewRowView(interview: interview) {
+                                if let idx = job.interviews.firstIndex(where: { $0.id == interview.wrappedValue.id }) {
+                                    job.interviews.remove(at: idx)
+                                    job.lastModified = Date()
+                                }
                             }
+                        }
+                        Button {
+                            let interview = Interview(date: Date())
+            job.interviews.append(interview)
                             job.lastModified = Date()
+                        } label: {
+                            Label("Add Interview", systemImage: "plus.circle")
                         }
-                        
-                        if job.hasInterview {
-                            DatePicker("Interview Date", selection: dateBinding(for: \.interviewDate))
-                                .padding(.leading, 40)
-                        }
-                        
+                    }
+                    
+                    Section("Status") {
                         Toggle(isOn: Binding(
                             get: { job.isDenied },
                             set: { newValue in
@@ -168,13 +171,10 @@ struct JobDetailsView: View {
                             Label("Application Denied", systemImage: "xmark.circle")
                         }
                         .toggleStyle(.switch)
-                        
                         if job.isDenied {
                             DatePicker("Denied Date", selection: dateBinding(for: \.deniedDate))
                                 .padding(.leading, 40)
                         }
-                        
-                        
                     }
                     
                     

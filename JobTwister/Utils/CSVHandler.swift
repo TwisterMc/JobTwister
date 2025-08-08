@@ -29,13 +29,18 @@ extension String.Iterator {
 
 class CSVHandler {
     static func exportJobs(_ jobs: [Job]) -> String {
-        let headers = ["Date Applied", "Company", "Title", "URL", "Salary Min", "Salary Max", "Has Interview", "Interview Date", "Is Denied", "Denied Date", "Notes", "Work Type", "Last Modified", "ID"]
+        let headers = ["Date Applied", "Company", "Title", "URL", "Salary Min", "Salary Max", "Interview Dates", "Is Denied", "Denied Date", "Notes", "Work Type", "Last Modified", "ID"]
         var rows = [headers.joined(separator: ",")]
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
         for job in jobs {
+            let interviewDates = job.interviews
+                .map { dateFormatter.string(from: $0.date) }
+                .joined(separator: ";")
+                .escapingCSV()
+            
             let row = [
                 dateFormatter.string(from: job.dateApplied),
                 job.companyName.escapingCSV(),
@@ -43,8 +48,7 @@ class CSVHandler {
                 job.url?.absoluteString ?? "",
                 job.salaryMin?.description ?? "",
                 job.salaryMax?.description ?? "",
-                job.hasInterview.description,
-                job.interviewDate.map { dateFormatter.string(from: $0) } ?? "",
+                interviewDates,
                 job.isDenied.description,
                 job.deniedDate.map { dateFormatter.string(from: $0) } ?? "",
                 job.notes.escapingCSV(),
@@ -127,15 +131,24 @@ class CSVHandler {
         if !row[5].isEmpty {
             job.salaryMax = Double(row[5])
         }
-        job.hasInterview = row[6].lowercased() == "true"
-        if !row[7].isEmpty {
-            job.interviewDate = dateFormatter.date(from: row[7])
+        
+        // Handle interview dates
+        let interviewDatesStr = row[6].unescapingCSV()
+        if !interviewDatesStr.isEmpty {
+            let dateStrings = interviewDatesStr.split(separator: ";")
+            for dateStr in dateStrings {
+                if let date = dateFormatter.date(from: String(dateStr)) {
+                    let interview = Interview(date: date)
+                    job.interviews.append(interview)
+                }
+            }
         }
-        job.isDenied = row[8].lowercased() == "true"
-        if !row[9].isEmpty {
-            job.deniedDate = dateFormatter.date(from: row[9])
+        
+        job.isDenied = row[7].lowercased() == "true"
+        if !row[8].isEmpty {
+            job.deniedDate = dateFormatter.date(from: row[8])
         }
-        job.notes = row[10].unescapingCSV()
+        job.notes = row[9].unescapingCSV()
         job.workplaceType = WorkplaceType(rawValue: row[11]) ?? .remote
         if let date = dateFormatter.date(from: row[12]) {
             job.lastModified = date

@@ -35,7 +35,7 @@ struct ContentView: View {
         case .workType:
             return jobs.sorted { $0.workplaceType.rawValue.localizedCaseInsensitiveCompare($1.workplaceType.rawValue) == .orderedAscending }
         case .interview:
-            return jobs.sorted { $0.hasInterview && !$1.hasInterview }
+            return jobs.sorted { !$0.interviews.isEmpty && $1.interviews.isEmpty }
         }
     }
     
@@ -51,7 +51,7 @@ struct ContentView: View {
     }
     
     var applicationStats: (applied: Int, interviewed: Int, denied: Int) {
-        let interviewed = jobs.filter { $0.hasInterview }.count
+        let interviewed = jobs.filter { !$0.interviews.isEmpty }.count
         let denied = jobs.filter { $0.isDenied }.count
         return (jobs.count, interviewed, denied)
     }
