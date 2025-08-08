@@ -8,10 +8,24 @@ struct InterviewRowView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             DatePicker("Interview Date", selection: $interview.date)
-                .labelsHidden()
             
-            TextField("Notes (optional)", text: $interview.notes)
-                .textFieldStyle(.roundedBorder)
+            Label("Notes", systemImage: "note.text")
+            TextEditor(text: $interview.notes)
+                               .scrollContentBackground(.hidden)
+                                           .padding(5)
+                                           .frame(height: 50)
+                                           .cornerRadius(8)
+                                           .focusAwareStyle()
+                                           .background(
+                                               RoundedRectangle(cornerRadius: 4)     // Smaller corner radius
+                                                   .fill(Color.clear)
+                                                   .overlay(
+                                                       RoundedRectangle(cornerRadius: 4)
+                                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                                   )
+                                           )
+        
+
             
             Button(role: .destructive, action: onDelete) {
                 Label("Remove Interview", systemImage: "minus.circle")
