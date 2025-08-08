@@ -149,42 +149,33 @@ struct DashboardView: View {
     }
     
     var chartContent: some View {
-        Chart {
-            if jobEvents.isEmpty {
-                // Add an invisible mark to force the chart to show axes
-                RectangleMark(
-                    x: .value("Date", dateRange.start, unit: selectedTimeRange.unit),
-                    y: .value("Events", 1)
-                )
-                .opacity(0)
-            } else {
-                ForEach(jobEvents) { event in
-                    BarMark(
-                        x: .value("Date", event.date, unit: selectedTimeRange.unit),
-                        y: .value("Events", 1)
-                    )
-                    .position(by: .value("Status", event.status))
-                    .foregroundStyle(by: .value("Status", event.status))
-                }
-            }
+        Chart(jobEvents) { event in
+            BarMark(
+                x: .value("Date", event.date, unit: selectedTimeRange.unit),
+                y: .value("Events", 1)
+            )
+            .foregroundStyle(by: .value("Status", event.status))
         }
         .chartForegroundStyleScale([
             "Applied": Color.blue,
-            "Interviewed": Color.green,
+            "Interview": Color.green,
             "Denied": Color.red
         ])
         .chartYAxis {
             AxisMarks(position: .leading)
         }
-        .frame(height: 200)
         .chartXAxis {
             AxisMarks(values: .stride(by: selectedTimeRange.unit)) { _ in
                 AxisGridLine()
                 AxisTick()
-                AxisValueLabel(format: selectedTimeRange == .year ?
-                    .dateTime.month() : .dateTime.month().day()
-                )
+                AxisValueLabel(format: .dateTime.month().day())
             }
+        }
+        .frame(height: 200)
+        .chartPlotStyle { plotArea in
+            plotArea
+                .background(Color.clear)
+                .border(Color.clear)
         }
     }
     
