@@ -3,6 +3,7 @@ import SwiftData
 
 struct JobDetailsView: View {
     @Bindable var job: Job
+    @State private var showingDeleteAlert = false
     
     let onEdit: () -> Void
     let onDelete: () -> Void
@@ -72,11 +73,24 @@ struct JobDetailsView: View {
                                 .textFieldStyle(.plain)
                                 .focusAwareStyle()
                             
-                            Button(role: .destructive, action: onDelete) {
-                                Label("Delete", systemImage: "trash")
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.red)
+                            Button(role: .destructive) {
+                                    showingDeleteAlert = true  // Show confirmation instead of direct deletion
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .tint(.red)
+                                .confirmationDialog(
+                                    "Delete Job?",
+                                    isPresented: $showingDeleteAlert,
+                                    actions: {
+                                        Button("Delete", role: .destructive, action: onDelete)
+                                        Button("Cancel", role: .cancel) { }
+                                    },
+                                    message: {
+                                        Text("Are you sure you want to delete this job? This action cannot be undone.")
+                                    }
+                                )
                         }
                         
                         
