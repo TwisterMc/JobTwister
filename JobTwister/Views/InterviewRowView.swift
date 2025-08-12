@@ -4,6 +4,7 @@ import SwiftData
 struct InterviewRowView: View {
     @Binding var interview: Interview
     var onDelete: () -> Void
+    @State private var showingDeleteAlert = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -27,13 +28,26 @@ struct InterviewRowView: View {
         
 
             
-            Button(role: .destructive, action: onDelete) {
-                Label("Remove Interview", systemImage: "minus.circle")
-            }
-            .buttonStyle(.borderless)
-            .foregroundStyle(.red)
-        }
-        .padding(.vertical, 4)
+            Button(role: .destructive) {
+                            showingDeleteAlert = true
+                        } label: {
+                            Label("Remove Interview", systemImage: "minus.circle")
+                        }
+                        .buttonStyle(.borderless)
+                        .foregroundStyle(.red)
+                        .confirmationDialog(
+                            "Remove Interview?",
+                            isPresented: $showingDeleteAlert,
+                            actions: {
+                                Button("Delete", role: .destructive, action: onDelete)
+                                Button("Cancel", role: .cancel) { }
+                            },
+                            message: {
+                                Text("Are you sure you want to remove this interview?")
+                            }
+                        )
+                    }
+                    .padding(.vertical, 4)
     }
 }
 
