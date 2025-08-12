@@ -35,6 +35,7 @@ struct FocusAwareStyle: ViewModifier {
             .padding(.horizontal, 4)  
             .padding(.vertical, 2)
             .foregroundStyle(getTextColor())
+            .tint(.accentColor)
             .background(
                 RoundedRectangle(cornerRadius: 4)     // Smaller corner radius
                     .fill(getBackgroundColor())
