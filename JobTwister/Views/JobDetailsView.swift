@@ -68,7 +68,6 @@ struct JobDetailsView: View {
                         
                         TextField("Company Name", text: $job.companyName)
                             .font(.headline)
-                            .foregroundColor(.secondary)
                             .textFieldStyle(.plain)
                             .focusAwareStyle()
                         
