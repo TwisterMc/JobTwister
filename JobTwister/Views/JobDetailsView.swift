@@ -82,10 +82,10 @@ struct JobDetailsView: View {
                         //                        }
                         //                        .buttonStyle(.bordered)
                         
-                        Button(action: onEdit) {
-                            Label("Edit", systemImage: "pencil")
-                        }
-                        .buttonStyle(.bordered)
+//                        Button(action: onEdit) {
+//                            Label("Edit", systemImage: "pencil")
+//                        }
+//                        .buttonStyle(.bordered)
                         
                         Button(role: .destructive, action: onDelete) {
                             Label("Delete", systemImage: "trash")
