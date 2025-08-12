@@ -2,6 +2,7 @@
 
 An experimental macOS application built with SwiftUI and SwiftData for managing job applications.
 
+
 This was built mostly with GitHub Copilot. I’m not responsible for your data, nor do I make any promises that this will work.
 
 Feel free to clone the repo and build it locally. I’m not providing a pre-built app as I don’t know how well the app is written.
@@ -17,12 +18,13 @@ The app helps users track their job search by managing:
 - Job applications with details like company, role, salary range, and URLs
 - Application status tracking (pending, interview scheduled, denied)
 - Work type preferences (remote, hybrid, in-office)
-- Interview scheduling and tracking
+- Interview scheduling and tracking with confirmation dialogues
 - Detailed notes for each application
-- CSV import/export for data portability
+- CSV import/export with smart data merging
 - Interactive dashboard with application statistics
 - Real-time search across all job details
 - Multiple sort options (date added, last modified, alphabetical)
+- Light and dark theme support
 
 ## Technical Details
 
@@ -32,10 +34,12 @@ This project experiments with:
 - Responsive layouts that adapt to window size
 - Real-time search and filtering capabilities
 - Dynamic sorting with multiple criteria
-- CSV data import/export functionality
+- Smart CSV data import/export with duplicate handling
 - Native macOS UI patterns and keyboard shortcuts
 - Dynamic charts and statistics dashboard
 - Form validation and data integrity checks
+- Theme switching with system, light, and dark modes
+- Confirmation dialogs for destructive actions
 
 ## Status
 
