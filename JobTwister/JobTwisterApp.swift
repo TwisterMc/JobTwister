@@ -13,7 +13,8 @@ import UniformTypeIdentifiers
 struct JobTwisterApp: App {
     @State private var csvOperation: CSVOperation?
     @State var selectedJob: Job?
-        @State var showingAddJob: Bool = false // JobTwisterApp owns this state
+    @State var showingAddJob: Bool = false // JobTwisterApp owns this state
+    @StateObject private var themeManager = ThemeManager.shared
     
     var body: some Scene {
         WindowGroup {
@@ -47,6 +48,22 @@ struct JobTwisterApp: App {
                 }
                 Button("Export Jobs to CSV...") {
                     csvOperation = .export
+                }
+            }
+            
+            CommandGroup(after: .sidebar) {
+                Picker("Theme", selection: $themeManager.currentTheme) {
+                    Text("System Theme")
+                        .tag(AppTheme.system)
+                        .keyboardShortcut("0", modifiers: [.command, .shift])
+                        
+                    Text("Light Theme")
+                        .tag(AppTheme.light)
+                        .keyboardShortcut("1", modifiers: [.command, .shift])
+                        
+                    Text("Dark Theme")
+                        .tag(AppTheme.dark)
+                        .keyboardShortcut("2", modifiers: [.command, .shift])
                 }
             }
         }
