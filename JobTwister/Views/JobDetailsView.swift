@@ -66,33 +66,25 @@ struct JobDetailsView: View {
                             .textFieldStyle(.plain)
                             .focusAwareStyle()
                         
-                        TextField("Company Name", text: $job.companyName)
-                            .font(.headline)
-                            .textFieldStyle(.plain)
-                            .focusAwareStyle()
-                        
-                        
-                    }
-                    
-                    Spacer()
-                    
-                    HStack(spacing: 12) {
-                        //                        Button(action: onSave) {
-                        //                            Label("Save", systemImage: "checkmark.circle")
-                        //                        }
-                        //                        .buttonStyle(.bordered)
-                        
-//                        Button(action: onEdit) {
-//                            Label("Edit", systemImage: "pencil")
-//                        }
-//                        .buttonStyle(.bordered)
-                        
-                        Button(role: .destructive, action: onDelete) {
-                            Label("Delete", systemImage: "trash")
+                        HStack() {
+                            TextField("Company Name", text: $job.companyName)
+                                .font(.headline)
+                                .textFieldStyle(.plain)
+                                .focusAwareStyle()
+                            
+                            Button(role: .destructive, action: onDelete) {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.red)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.red)
+                        
+                        
                     }
+                    
+                   
+                    
+                    
                 }
                 .padding()
                 .background(Color(NSColor.controlBackgroundColor).opacity(0.5))
