@@ -132,22 +132,32 @@ struct JobDetailsView: View {
         
                     }
                     
-                    Section("Interviews") {
-                        ForEach($job.interviews, id: \.wrappedValue.id) { interview in
-                            InterviewRowView(interview: interview) {
-                                if let idx = job.interviews.firstIndex(where: { $0.id == interview.wrappedValue.id }) {
-                                    job.interviews.remove(at: idx)
-                                    job.lastModified = Date()
+                    Section {
+                        DisclosureGroup(
+                            content: {
+                                Spacer()
+                                ForEach($job.interviews, id: \.wrappedValue.id) { interview in
+                                    InterviewRowView(interview: interview) {
+                                        if let idx = job.interviews.firstIndex(where: { $0.id == interview.wrappedValue.id }) {
+                                            job.interviews.remove(at: idx)
+                                            job.lastModified = Date()
+                                        }
+                                    }
                                 }
+                                Button {
+                                    let interview = Interview(date: Date())
+                                    job.interviews.append(interview)
+                                    job.lastModified = Date()
+                                } label: {
+                                    Label("Add Interview", systemImage: "plus.circle")
+                                }
+                                .padding(.top, 4)
+                            },
+                            label: {
+                                Label("Interviews (\(job.interviews.count))", systemImage: "person.badge.clock")
                             }
-                        }
-                        Button {
-                            let interview = Interview(date: Date())
-            job.interviews.append(interview)
-                            job.lastModified = Date()
-                        } label: {
-                            Label("Add Interview", systemImage: "plus.circle")
-                        }
+                               
+                        )
                     }
                     
                     Section("Status") {
