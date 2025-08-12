@@ -81,11 +81,16 @@ struct DashboardView: View {
     var filteredJobs: [Job] {
         jobs.filter { job in
             // A job should be included if any of its events fall within the date range
-            let dates = [
-                job.dateApplied,
-                job.hasInterview ? job.interviewDate : nil,
-                job.isDenied ? job.deniedDate : nil
-            ].compactMap { $0 }
+            // Collect all relevant dates
+            var dates = [job.dateApplied]
+            
+            // Add all interview dates
+            dates.append(contentsOf: job.interviews.map { $0.date })
+            
+            // Add denial date if it exists
+            if job.isDenied, let deniedDate = job.deniedDate {
+                dates.append(deniedDate)
+            }
             
             return dates.contains { date in
                 date >= dateRange.start && date <= dateRange.end
@@ -113,8 +118,8 @@ struct DashboardView: View {
             events.append(JobEvent(date: job.dateApplied, status: "Applied", job: job))
             
             // Add interview date if it exists
-            if job.hasInterview, let interviewDate = job.interviewDate {
-                events.append(JobEvent(date: interviewDate, status: "Interviewed", job: job))
+            for interview in job.interviews {
+                events.append(JobEvent(date: interview.date, status: "Interview", job: job))
             }
             
             // Add denial date if it exists
@@ -144,42 +149,33 @@ struct DashboardView: View {
     }
     
     var chartContent: some View {
-        Chart {
-            if jobEvents.isEmpty {
-                // Add an invisible mark to force the chart to show axes
-                RectangleMark(
-                    x: .value("Date", dateRange.start, unit: selectedTimeRange.unit),
-                    y: .value("Events", 1)
-                )
-                .opacity(0)
-            } else {
-                ForEach(jobEvents) { event in
-                    BarMark(
-                        x: .value("Date", event.date, unit: selectedTimeRange.unit),
-                        y: .value("Events", 1)
-                    )
-                    .position(by: .value("Status", event.status))
-                    .foregroundStyle(by: .value("Status", event.status))
-                }
-            }
+        Chart(jobEvents) { event in
+            BarMark(
+                x: .value("Date", event.date, unit: selectedTimeRange.unit),
+                y: .value("Events", 1)
+            )
+            .foregroundStyle(by: .value("Status", event.status))
         }
         .chartForegroundStyleScale([
             "Applied": Color.blue,
-            "Interviewed": Color.green,
+            "Interview": Color.green,
             "Denied": Color.red
         ])
         .chartYAxis {
             AxisMarks(position: .leading)
         }
-        .frame(height: 200)
         .chartXAxis {
             AxisMarks(values: .stride(by: selectedTimeRange.unit)) { _ in
                 AxisGridLine()
                 AxisTick()
-                AxisValueLabel(format: selectedTimeRange == .year ?
-                    .dateTime.month() : .dateTime.month().day()
-                )
+                AxisValueLabel(format: .dateTime.month().day())
             }
+        }
+        .frame(height: 200)
+        .chartPlotStyle { plotArea in
+            plotArea
+                .background(Color.clear)
+                .border(Color.clear)
         }
     }
     

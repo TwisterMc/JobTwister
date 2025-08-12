@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct JobDetailsView: View {
     @Bindable var job: Job
@@ -65,34 +66,25 @@ struct JobDetailsView: View {
                             .textFieldStyle(.plain)
                             .focusAwareStyle()
                         
-                        TextField("Company Name", text: $job.companyName)
-                            .font(.headline)
-                            .foregroundColor(.secondary)
-                            .textFieldStyle(.plain)
-                            .focusAwareStyle()
-                        
-                        
-                    }
-                    
-                    Spacer()
-                    
-                    HStack(spacing: 12) {
-                        //                        Button(action: onSave) {
-                        //                            Label("Save", systemImage: "checkmark.circle")
-                        //                        }
-                        //                        .buttonStyle(.bordered)
-                        
-//                        Button(action: onEdit) {
-//                            Label("Edit", systemImage: "pencil")
-//                        }
-//                        .buttonStyle(.bordered)
-                        
-                        Button(role: .destructive, action: onDelete) {
-                            Label("Delete", systemImage: "trash")
+                        HStack() {
+                            TextField("Company Name", text: $job.companyName)
+                                .font(.headline)
+                                .textFieldStyle(.plain)
+                                .focusAwareStyle()
+                            
+                            Button(role: .destructive, action: onDelete) {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(.red)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.red)
+                        
+                        
                     }
+                    
+                   
+                    
+                    
                 }
                 .padding()
                 .background(Color(NSColor.controlBackgroundColor).opacity(0.5))
@@ -140,23 +132,35 @@ struct JobDetailsView: View {
         
                     }
                     
-                    Section("Status") {
-                        Toggle(isOn: $job.hasInterview) {
-                            Label("Has Interview", systemImage: "calendar.badge.clock")
-                        }
-                        .toggleStyle(.switch)
-                        .onChange(of: job.hasInterview) { oldValue, newValue in
-                            if newValue && job.interviewDate == nil {
-                                job.interviewDate = Date()
+                    Section {
+                        DisclosureGroup(
+                            content: {
+                                Spacer()
+                                ForEach($job.interviews, id: \.wrappedValue.id) { interview in
+                                    InterviewRowView(interview: interview) {
+                                        if let idx = job.interviews.firstIndex(where: { $0.id == interview.wrappedValue.id }) {
+                                            job.interviews.remove(at: idx)
+                                            job.lastModified = Date()
+                                        }
+                                    }
+                                }
+                                Button {
+                                    let interview = Interview(date: Date())
+                                    job.interviews.append(interview)
+                                    job.lastModified = Date()
+                                } label: {
+                                    Label("Add Interview", systemImage: "plus.circle")
+                                }
+                                .padding(.top, 4)
+                            },
+                            label: {
+                                Label("Interviews (\(job.interviews.count))", systemImage: "person.badge.clock")
                             }
-                            job.lastModified = Date()
-                        }
-                        
-                        if job.hasInterview {
-                            DatePicker("Interview Date", selection: dateBinding(for: \.interviewDate))
-                                .padding(.leading, 40)
-                        }
-                        
+                               
+                        )
+                    }
+                    
+                    Section("Status") {
                         Toggle(isOn: Binding(
                             get: { job.isDenied },
                             set: { newValue in
@@ -168,13 +172,10 @@ struct JobDetailsView: View {
                             Label("Application Denied", systemImage: "xmark.circle")
                         }
                         .toggleStyle(.switch)
-                        
                         if job.isDenied {
                             DatePicker("Denied Date", selection: dateBinding(for: \.deniedDate))
                                 .padding(.leading, 40)
                         }
-                        
-                        
                     }
                     
                     

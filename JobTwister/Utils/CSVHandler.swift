@@ -29,13 +29,22 @@ extension String.Iterator {
 
 class CSVHandler {
     static func exportJobs(_ jobs: [Job]) -> String {
-        let headers = ["Date Applied", "Company", "Title", "URL", "Salary Min", "Salary Max", "Has Interview", "Interview Date", "Is Denied", "Denied Date", "Notes", "Work Type", "Last Modified", "ID"]
+        let headers = ["Date Applied", "Company", "Title", "URL", "Salary Min", "Salary Max", "Interview Dates", "Is Denied", "Denied Date", "Notes", "Work Type", "Last Modified", "ID"]
         var rows = [headers.joined(separator: ",")]
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.dateFormat = "MMM d, yyyy h:mm a"
         
         for job in jobs {
+            let interviewDates = job.interviews
+                .map { interview in
+                    let dateStr = dateFormatter.string(from: interview.date)
+                    let notesStr = interview.notes.isEmpty ? "(no notes)" : interview.notes
+                    return "\(dateStr) - \(notesStr)"
+                }
+                .joined(separator: " | ")
+                .escapingCSV()
+            
             let row = [
                 dateFormatter.string(from: job.dateApplied),
                 job.companyName.escapingCSV(),
@@ -43,8 +52,7 @@ class CSVHandler {
                 job.url?.absoluteString ?? "",
                 job.salaryMin?.description ?? "",
                 job.salaryMax?.description ?? "",
-                job.hasInterview.description,
-                job.interviewDate.map { dateFormatter.string(from: $0) } ?? "",
+                interviewDates,
                 job.isDenied.description,
                 job.deniedDate.map { dateFormatter.string(from: $0) } ?? "",
                 job.notes.escapingCSV(),
@@ -58,17 +66,61 @@ class CSVHandler {
         return rows.joined(separator: "\n")
     }
     
-    static func importJobs(from csv: String) -> [Job] {
+    static func importJobs(from csv: String, context: ModelContext) -> [Job] {
         var jobs: [Job] = []
-        let rows = csv.components(separatedBy: .newlines).filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+        let rows = csv.components(separatedBy: .newlines)
+            .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
         
-        // Skip header row
         if rows.count > 1 {
             for row in rows.dropFirst() {
-                if let job = createJobFromCSV(row) {
-                    jobs.append(job)
+                if let newJob = createJobFromCSV(row) {
+                    let jobId = newJob.id
+                    let descriptor = FetchDescriptor<Job>(
+                        predicate: #Predicate<Job> { job in
+                            job.id == jobId
+                        }
+                    )
+                    
+                    do {
+                        let existingJobs = try context.fetch(descriptor)
+                        if let existingJob = existingJobs.first {
+                            // Update existing job properties
+                            existingJob.dateApplied = newJob.dateApplied
+                            existingJob.companyName = newJob.companyName
+                            existingJob.jobTitle = newJob.jobTitle
+                            existingJob.url = newJob.url
+                            existingJob.salaryMin = newJob.salaryMin
+                            existingJob.salaryMax = newJob.salaryMax
+                            existingJob.isDenied = newJob.isDenied
+                            existingJob.deniedDate = newJob.deniedDate
+                            existingJob.notes = newJob.notes
+                            existingJob.workplaceType = newJob.workplaceType
+                            existingJob.lastModified = newJob.lastModified
+                            
+                            // Update interviews
+                            existingJob.interviews.removeAll()
+                            existingJob.interviews.append(contentsOf: newJob.interviews)
+                            
+                            jobs.append(existingJob)
+                        } else {
+                            // Insert new job
+                            context.insert(newJob)
+                            jobs.append(newJob)
+                        }
+                    } catch {
+                        print("Error fetching job: \(error)")
+                        context.insert(newJob)
+                        jobs.append(newJob)
+                    }
                 }
             }
+        }
+        
+        // Save the context to persist changes
+        do {
+            try context.save()
+        } catch {
+            print("Error saving context: \(error)")
         }
         
         return jobs
@@ -101,73 +153,124 @@ class CSVHandler {
         }
         columns.append(currentColumn)
         
-        return createJobFromCSV(columns)
+        return createJobFromCSVColumns(columns)
     }
     
-    static func createJobFromCSV(_ row: [String]) -> Job? {
-        guard row.count >= 14 else { return nil }
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
+    static func createJobFromCSVColumns(_ row: [String]) -> Job? {
+        guard row.count >= 11 else {
+            print("Row has insufficient columns: \(row.count)")
+            return nil
+        }
         
         let job = Job()
         
-        if let date = dateFormatter.date(from: row[0]) {
-            job.dateApplied = date
-        }
+        // Parse date applied with flexible format
+        job.dateApplied = parseFlexibleDate(row[0]) ?? Date()
         
         job.companyName = row[1].unescapingCSV()
         job.jobTitle = row[2].unescapingCSV()
+        
         if !row[3].isEmpty {
             job.url = URL(string: row[3])
         }
+        
         if !row[4].isEmpty {
             job.salaryMin = Double(row[4])
         }
+        
         if !row[5].isEmpty {
             job.salaryMax = Double(row[5])
         }
-        job.hasInterview = row[6].lowercased() == "true"
-        if !row[7].isEmpty {
-            job.interviewDate = dateFormatter.date(from: row[7])
+        
+        // Handle interview dates
+        let interviewDatesStr = row[6].unescapingCSV()
+        if !interviewDatesStr.isEmpty {
+            let interviews = interviewDatesStr.split(separator: " | ")
+            for interview in interviews {
+                if let dashIndex = interview.firstIndex(of: "-") {
+                    let dateStr = String(interview[..<dashIndex]).trimmingCharacters(in: .whitespaces)
+                    let notesStr = String(interview[interview.index(after: dashIndex)...])
+                        .trimmingCharacters(in: .whitespaces)
+                    
+                    if let date = parseFlexibleDate(dateStr) {
+                        let interviewObj = Interview()
+                        interviewObj.date = date
+                        interviewObj.notes = notesStr == "(no notes)" ? "" : notesStr
+                        job.interviews.append(interviewObj)
+                    }
+                }
+            }
         }
-        job.isDenied = row[8].lowercased() == "true"
-        if !row[9].isEmpty {
-            job.deniedDate = dateFormatter.date(from: row[9])
+        
+        job.isDenied = row[7].lowercased() == "true"
+        
+        if !row[8].isEmpty {
+            job.deniedDate = parseFlexibleDate(row[8])
         }
-        job.notes = row[10].unescapingCSV()
-        job.workplaceType = WorkplaceType(rawValue: row[11]) ?? .remote
-        if let date = dateFormatter.date(from: row[12]) {
-            job.lastModified = date
+        
+        // Handle notes (row 9, but check if it exists)
+        if row.count > 9 {
+            job.notes = row[9].unescapingCSV()
+        }
+        
+        // Handle work type (row 10, but check if it exists)
+        if row.count > 10 {
+            job.workplaceType = WorkplaceType(rawValue: row[10]) ?? .remote
+        } else {
+            job.workplaceType = .remote
+        }
+        
+        // Handle last modified (row 11, but check if it exists)
+        if row.count > 11 && !row[11].isEmpty {
+            job.lastModified = parseFlexibleDate(row[11]) ?? Date()
         } else {
             job.lastModified = Date()
         }
-        if !row[13].isEmpty {
-            job.id = row[13]
+        
+        // Handle ID (row 12, but check if it exists and is not blank)
+        if row.count > 12 && !row[12].trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            job.id = row[12].trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            job.id = UUID().uuidString
         }
         
         return job
     }
-    
-    private static func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
-    }
-    
-    private static func parseDate(_ dateString: String) -> Date? {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
+
+    private static func parseFlexibleDate(_ dateString: String) -> Date? {
+        let trimmed = dateString.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        if let date = formatter.date(from: dateString) {
-            return Calendar.current.startOfDay(for: date)
+        // Try multiple date formats
+        let formatters = [
+            // Your current format
+            { () -> DateFormatter in
+                let f = DateFormatter()
+                f.dateFormat = "MMM d, yyyy h:mm a"
+                return f
+            }(),
+            
+            // Simple date format (YYYY-MM-DD)
+            { () -> DateFormatter in
+                let f = DateFormatter()
+                f.dateFormat = "yyyy-MM-dd"
+                return f
+            }(),
+            
+            // ISO8601 format
+            { () -> DateFormatter in
+                let f = DateFormatter()
+                f.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+                return f
+            }()
+        ]
+        
+        for formatter in formatters {
+            if let date = formatter.date(from: trimmed) {
+                return date
+            }
         }
         
-        let iso8601Formatter = ISO8601DateFormatter()
-        if let date = iso8601Formatter.date(from: dateString) {
-            return Calendar.current.startOfDay(for: date)
-        }
-        
+        print("Failed to parse date: '\(trimmed)'")
         return nil
     }
 }
