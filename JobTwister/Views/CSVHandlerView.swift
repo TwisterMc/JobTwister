@@ -45,7 +45,7 @@ struct CSVHandlerView: View {
             if panel.runModal() == .OK, let url = panel.url {
                 do {
                     let csvString = try String(contentsOf: url)
-                    let jobs = CSVHandler.importJobs(from: csvString)
+                    let jobs = CSVHandler.importJobs(from: csvString, context: modelContext)
                     jobs.forEach { modelContext.insert($0) }
                     try modelContext.save()
                     dismiss()
